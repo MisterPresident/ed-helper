@@ -1,0 +1,25 @@
+# Allgemein
+- Anämie
+- Sonstiges
+# Stoffwechsel
+- Hyperglykämie
+- Hypoglykämie
+# Nephrologie
+- AKI
+- CKD
+- Hypernatriämie
+- Hyponatriämie
+- Hyperkaliämie
+- Hypokaliämie
+- Hyperkalzämie
+- Hypokalzämie
+# Gastroenterologie & Hepatologie
+# GI-Blutung
+- Diarrhoe
+- Zirrhose
+- LFP-Erhöhung
+Pulmologie
+- Pneumonie
+# Kardiologie
+- Kardiale Dekompensation
+- Hypertonie

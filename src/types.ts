@@ -1,0 +1,178 @@
+export type EncounterId = string;
+
+export type Pathway = 'symptom' | 'diagnosis';
+
+export type WorkflowStep =
+  | 'leitsymptom'
+  | 'leitdiagnose'
+  | 'ros'
+  | 'opqrst'
+  | 'redflags'
+  | 'differentials'
+  | 'score'
+  | 'sampler'
+  | 'status'
+  | 'diagnostik'
+  | 'discharge'
+  | 'prozedere'
+  | 'summary';
+
+export type SymptomKey = string;
+export type DiagnosisKey = string;
+export type RedFlagKey = string;
+export type ScoreKey = string;
+
+export type StatusSystemKey =
+  | 'cns'
+  | 'cor'
+  | 'pulmo'
+  | 'ws'
+  | 'flanken'
+  | 'extremitaeten'
+  | 'abdomen';
+
+// Status order in the rendered report.
+export const STATUS_SYSTEMS: StatusSystemKey[] = [
+  'cns',
+  'cor',
+  'pulmo',
+  'abdomen',
+  'ws',
+  'flanken',
+  'extremitaeten',
+];
+
+export type OPQRST = {
+  onset: string;
+  provocation: string;
+  quality: string;
+  radiation: string;
+  severity: string;
+  time: string;
+};
+
+export type SAMPLER = {
+  symptoms: string;
+  allergien: string;
+  medikation: string;
+  vorerkrankungen: string;
+  voroperationen: string;
+  lastMeal: string;
+  event: string;
+  risiko: string;
+};
+
+export type RedFlagState = 'positive' | 'excluded' | 'unknown';
+
+export type RedFlag = {
+  key: RedFlagKey;
+  label: string;
+  suspects: string;
+  action?: string;
+};
+
+export type ScoreItemOption = {
+  label: string;
+  points: number;
+};
+
+export type ScoreItem = {
+  key: string;
+  label: string;
+  hint?: string;
+  options: ScoreItemOption[];
+};
+
+export type ScoreInterpretation = {
+  band: string;
+  meaning: string;
+};
+
+export type ScoreDef = {
+  key: ScoreKey;
+  label: string;
+  mdcalcUrl: string;
+  reference?: string;
+  items: ScoreItem[];
+  interpret: (total: number) => ScoreInterpretation;
+};
+
+export type ScorePickedItem = {
+  optionIndex: number;
+  label: string;
+  points: number;
+};
+
+export type ScoreResult = {
+  picked: Record<string, ScorePickedItem>;
+  total: number;
+  band: string;
+  meaning: string;
+};
+
+export type StatusSystemFinding = {
+  systemKey: StatusSystemKey;
+  findings: string[];
+  free?: string;
+};
+
+export type StatusFindings = Partial<Record<StatusSystemKey, StatusSystemFinding>>;
+
+export type DifferentialDx = {
+  key: string;
+  label: string;
+  hint?: string;
+};
+
+export type DifferentialState = 'positive' | 'excluded' | 'unknown';
+
+export type SymptomDef = {
+  key: SymptomKey;
+  label: string;
+  usesOPQRST: boolean;
+  recommendedScores: ScoreKey[];
+  redFlagKeys: RedFlagKey[];
+  differentials: DifferentialDx[];
+  algorithmUrl?: string;
+};
+
+export type DiagnosisDef = {
+  key: DiagnosisKey;
+  label: string;
+  reviewOfSymptoms: string[];
+  redFlagKeys: RedFlagKey[];
+  recommendedScores: ScoreKey[];
+  dischargeRules: string[];
+  treatmentUrl?: string;
+};
+
+export type Diagnostik = {
+  ekg: string;
+  bga: string;
+  labor: string;
+  bildgebung: string;
+  weitere: string;
+};
+
+export type Encounter = {
+  id: EncounterId;
+  label: string;
+  createdAt: number;
+  pathway: Pathway;
+  step: WorkflowStep;
+  leitsymptom?: SymptomKey;
+  leitdiagnose?: DiagnosisKey;
+  opqrst?: Partial<OPQRST>;
+  rosChecked?: Record<string, boolean>;
+  redFlags?: Record<RedFlagKey, RedFlagState>;
+  differentials?: Record<string, DifferentialState>;
+  differentialsFree?: string;
+  scoreResults?: Record<ScoreKey, ScoreResult>;
+  sampler?: Partial<SAMPLER>;
+  status?: StatusFindings;
+  diagnostik?: Partial<Diagnostik>;
+  dischargeChecked?: Record<string, boolean>;
+  prozedere?: string;
+  prozedereChips?: string[];
+  notes?: string;
+};

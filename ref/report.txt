@@ -1,0 +1,25 @@
+<u>Anamnese:</>
+
+<u>Allergien:</>
+<u>Dauermedikation:</>
+<u>Vordiagnosen:</>
+<u>Voroperationen:</>
+
+<u>Status:</>
+- ZNS:
+- Cor:
+- Pulmo:
+- WS:
+- Flanken:
+- Exträmitäten:
+
+<u>Diagnostik:</>
+- EKG:
+- vBGA:
+...
+
+<u>Differentialdiagnose:</>
+-
+
+<u>Prozedere:</>
+-
