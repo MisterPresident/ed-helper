@@ -152,6 +152,7 @@ export type Diagnostik = {
   bga: string;
   labor: string;
   bildgebung: string;
+  pocus: string;
   weitere: string;
 };
 
