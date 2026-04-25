@@ -1,4 +1,4 @@
-import type { Encounter, RedFlagState, ScoreResult } from '../types';
+import type { Encounter, RedFlagState, RosState, ScoreResult } from '../types';
 import { STATUS_SYSTEMS } from '../types';
 import { SYMPTOMS_BY_KEY } from '../data/symptoms';
 import { DIAGNOSES_BY_KEY } from '../data/diagnoses';
@@ -6,7 +6,8 @@ import { RED_FLAGS } from '../data/redFlags';
 import { SCORES } from '../data/scores';
 import { OPQRST_FIELDS } from '../data/opqrst';
 import { STATUS_PALETTES } from '../data/status';
-import { DIAGNOSTIK_SECTIONS } from '../data/diagnostik';
+import { DIAGNOSTIK_SECTIONS, formatBgaInline } from '../data/diagnostik';
+import { ROS_CATEGORIES, ROS_BY_KEY } from '../data/ros';
 import { TREATMENT_SECTIONS } from '../data/treatment';
 import { formatTotal } from './score';
 
@@ -44,8 +45,6 @@ function buildAnamnese(enc: Encounter): string {
   }
   if (dx) {
     lines.push(`Leitdiagnose: ${dx.label}.`);
-    const pos = dx.reviewOfSymptoms.filter((_, idx) => enc.rosChecked?.[`ros_${idx}`]);
-    if (pos.length) lines.push(`Vorhanden: ${pos.join(', ')}.`);
   }
   const sampler = enc.sampler;
   if (sampler?.symptoms?.trim()) lines.push(sampler.symptoms.trim());
@@ -85,11 +84,38 @@ function buildStatus(enc: Encounter): string | null {
 function buildDiagnostik(enc: Encounter): string | null {
   const lines: string[] = [];
   for (const sec of DIAGNOSTIK_SECTIONS) {
+    if (sec.key === 'bga') {
+      const inline = formatBgaInline(enc.diagnostik?.bgaValues);
+      const free = enc.diagnostik?.bga?.trim();
+      const combined = [inline, free].filter(Boolean).join('; ');
+      if (combined) lines.push(`- ${sec.label}: ${combined}`);
+      continue;
+    }
     const v = enc.diagnostik?.[sec.key]?.trim();
     if (v) lines.push(`- ${sec.label}: ${v}`);
   }
   return lines.length ? lines.join('\n') : null;
 }
+
+// ───────── ROS (organ-system review) ─────────
+function buildRos(enc: Encounter): string | null {
+  const ros = enc.ros;
+  if (!ros) return null;
+  const lines: string[] = [];
+  for (const cat of ROS_CATEGORIES) {
+    const bits: string[] = [];
+    for (const item of cat.items) {
+      const state: RosState = ros[item.key] ?? 'unknown';
+      if (state === 'unknown') continue;
+      bits.push(`${item.label} ${state === 'positive' ? 'positiv' : 'negativ'}`);
+    }
+    if (bits.length) lines.push(`- ${cat.label}: ${bits.join(', ')}`);
+  }
+  return lines.length ? lines.join('\n') : null;
+}
+
+// silence unused import lint when ROS_BY_KEY only used in tests/integrity
+void ROS_BY_KEY;
 
 // ───────── Therapie ─────────
 function buildTreatment(enc: Encounter): string | null {
@@ -204,6 +230,9 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
 
   const anamnese = buildAnamnese(enc);
   if (anamnese) sections.push({ title: 'Anamnese', body: anamnese });
+
+  const ros = buildRos(enc);
+  if (ros) sections.push({ title: 'Anamnese (ROS)', body: ros });
 
   if (sampler?.allergien?.trim())
     sections.push({ title: 'Allergien', body: sampler.allergien.trim() });

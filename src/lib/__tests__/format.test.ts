@@ -181,20 +181,55 @@ describe('buildSummary — DDx', () => {
 });
 
 describe('buildSummary — Diagnose pathway', () => {
-  it('renders Leitdiagnose, ROS positives, and Entlassungskriterien with checked state', () => {
+  it('renders Leitdiagnose and Entlassungskriterien with checked state', () => {
     const enc = baseEnc({
       pathway: 'diagnosis',
       leitdiagnose: 'hypoglykaemie',
-      rosChecked: { ros_0: true, ros_2: true },
       dischargeChecked: { dc_0: true, dc_1: true },
     });
     const s = buildSummary(enc);
     expect(s).toContain('Leitdiagnose: Hypoglykämie');
-    expect(s).toContain('Vorhanden:');
-    expect(s).toContain('Schwitzen');
     expect(s).toContain('<u>Entlassungskriterien:</>');
     expect(s).toContain('☑');
     expect(s).toContain('☐');
+  });
+});
+
+describe('buildSummary — ROS by organ system', () => {
+  it('groups positive/negative items by category, omits unknown', () => {
+    const enc = baseEnc({
+      ros: {
+        ros_const_fieber: 'positive',
+        ros_const_nachtschweiss: 'negative',
+        ros_cv_thoraxschmerz: 'positive',
+        ros_cv_palpitationen: 'negative',
+        ros_neu_kopfschmerz: 'unknown',
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('<u>Anamnese (ROS):</>');
+    expect(s).toContain('- Konstitutionell / Allgemein: Fieber positiv, Nachtschweiß negativ');
+    expect(s).toContain('- Kardiovaskulär: Thoraxschmerz positiv, Palpitationen negativ');
+    // unknown → omitted
+    expect(s).not.toContain('Kopfschmerz');
+  });
+});
+
+describe('buildSummary — structured BGA', () => {
+  it('renders only filled BGA fields with units', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        bgaValues: { ph: '7.20', lac: '5.0', k: '4.0' },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('<u>Diagnostik:</>');
+    expect(s).toContain('pH 7.20');
+    expect(s).toContain('Laktat 5.0 mmol/L');
+    expect(s).toContain('K⁺ 4.0 mmol/L');
+    // un-set fields omitted
+    expect(s).not.toContain('pCO₂');
+    expect(s).not.toContain('Hb');
   });
 });
 

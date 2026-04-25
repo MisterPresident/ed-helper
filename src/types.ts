@@ -127,6 +127,37 @@ export type DifferentialDx = {
 
 export type DifferentialState = 'positive' | 'excluded' | 'unknown';
 
+// ───────── ROS (organ-system review) ─────────
+export type RosState = 'positive' | 'negative' | 'unknown';
+
+export type RosCategoryKey =
+  | 'konstitutionell'
+  | 'augen'
+  | 'hno'
+  | 'cardiovaskulaer'
+  | 'respiratorisch'
+  | 'gastrointestinal'
+  | 'urogenital'
+  | 'muskuloskelettal'
+  | 'haut'
+  | 'neurologisch'
+  | 'psychiatrisch'
+  | 'endokrin'
+  | 'haematologisch'
+  | 'allergisch';
+
+export type RosItem = {
+  key: string;
+  label: string;
+  category: RosCategoryKey;
+};
+
+export type RosCategoryDef = {
+  key: RosCategoryKey;
+  label: string;
+  items: RosItem[];
+};
+
 export type SymptomDef = {
   key: SymptomKey;
   label: string;
@@ -135,21 +166,37 @@ export type SymptomDef = {
   redFlagKeys: RedFlagKey[];
   differentials: DifferentialDx[];
   algorithmUrl?: string;
+  highlightedRosKeys?: string[];
 };
 
 export type DiagnosisDef = {
   key: DiagnosisKey;
   label: string;
-  reviewOfSymptoms: string[];
   redFlagKeys: RedFlagKey[];
   recommendedScores: ScoreKey[];
   dischargeRules: string[];
   treatmentUrl?: string;
+  highlightedRosKeys?: string[];
+};
+
+// ───────── Diagnostik (incl. structured BGA) ─────────
+export type BgaValues = {
+  ph: string;
+  pco2: string;
+  po2: string;
+  hco3: string;
+  be: string;
+  lac: string;
+  na: string;
+  k: string;
+  glc: string;
+  hb: string;
 };
 
 export type Diagnostik = {
   ekg: string;
   bga: string;
+  bgaValues: Partial<BgaValues>;
   labor: string;
   bildgebung: string;
   pocus: string;
@@ -175,7 +222,7 @@ export type Encounter = {
   leitsymptom?: SymptomKey;
   leitdiagnose?: DiagnosisKey;
   opqrst?: Partial<OPQRST>;
-  rosChecked?: Record<string, boolean>;
+  ros?: Record<string, RosState>;
   redFlags?: Record<RedFlagKey, RedFlagState>;
   differentials?: Record<string, DifferentialState>;
   differentialsFree?: string;

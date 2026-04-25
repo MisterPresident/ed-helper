@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
+  BgaValues,
   DiagnosisKey,
   DifferentialState,
   Diagnostik,
@@ -11,6 +12,7 @@ import type {
   Pathway,
   RedFlagKey,
   RedFlagState,
+  RosState,
   SAMPLER,
   ScoreKey,
   ScoreResult,
@@ -35,7 +37,7 @@ type Actions = {
   setLeitsymptom: (id: EncounterId, key: SymptomKey) => void;
   setLeitdiagnose: (id: EncounterId, key: DiagnosisKey) => void;
   patchOpqrst: (id: EncounterId, patch: Partial<OPQRST>) => void;
-  setROS: (id: EncounterId, key: string, checked: boolean) => void;
+  setRos: (id: EncounterId, key: string, state: RosState) => void;
   setRedFlag: (id: EncounterId, key: RedFlagKey, state: RedFlagState) => void;
   setDifferential: (id: EncounterId, key: string, state: DifferentialState) => void;
   setDifferentialsFree: (id: EncounterId, text: string) => void;
@@ -49,6 +51,7 @@ type Actions = {
     free?: string
   ) => void;
   patchDiagnostik: (id: EncounterId, patch: Partial<Diagnostik>) => void;
+  setBgaValue: (id: EncounterId, key: keyof BgaValues, value: string) => void;
   patchTreatment: (id: EncounterId, patch: Partial<Treatment>) => void;
   setDischarge: (id: EncounterId, key: string, checked: boolean) => void;
   setProzedere: (id: EncounterId, text: string) => void;
@@ -125,11 +128,11 @@ export const useEncounters = create<State & Actions>()(
           }))
         ),
 
-      setROS: (id, key, checked) =>
+      setRos: (id, key, state) =>
         set((s) =>
           patchEncounter(s, id, (e) => ({
             ...e,
-            rosChecked: { ...(e.rosChecked ?? {}), [key]: checked },
+            ros: { ...(e.ros ?? {}), [key]: state },
           }))
         ),
 
@@ -196,6 +199,17 @@ export const useEncounters = create<State & Actions>()(
           }))
         ),
 
+      setBgaValue: (id, key, value) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            diagnostik: {
+              ...(e.diagnostik ?? {}),
+              bgaValues: { ...(e.diagnostik?.bgaValues ?? {}), [key]: value },
+            },
+          }))
+        ),
+
       patchTreatment: (id, patch) =>
         set((s) =>
           patchEncounter(s, id, (e) => ({
@@ -223,7 +237,7 @@ export const useEncounters = create<State & Actions>()(
     }),
     {
       name: 'er-helper:encounters:v1',
-      version: 2,
+      version: 3,
     }
   )
 );

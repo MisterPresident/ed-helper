@@ -5,10 +5,8 @@ import { LeitsymptomStep } from './steps/LeitsymptomStep';
 import { LeitdiagnoseStep } from './steps/LeitdiagnoseStep';
 import { RosStep } from './steps/RosStep';
 import { OpqrstStep } from './steps/OpqrstStep';
-import { RedFlagsStep } from './steps/RedFlagsStep';
 import { DifferentialsStep } from './steps/DifferentialsStep';
 import { ScoreStep } from './steps/ScoreStep';
-import { SamplerStep } from './steps/SamplerStep';
 import { StatusStep } from './steps/StatusStep';
 import { DiagnostikStep } from './steps/DiagnostikStep';
 import { TreatmentStep } from './steps/TreatmentStep';
@@ -21,10 +19,10 @@ const STEP_LABELS: Record<WorkflowStep, string> = {
   leitdiagnose: 'Leitdiagnose',
   ros: 'ROS',
   opqrst: 'OPQRST',
-  redflags: 'Red Flags',
+  redflags: 'Red Flags', // legacy, no longer in active sequences (lives in SidePanel)
   differentials: 'DDx',
   score: 'Scores',
-  sampler: 'SAMPLER',
+  sampler: 'SAMPLER', // legacy, lives in SidePanel
   status: 'Status',
   diagnostik: 'Diagnostik',
   treatment: 'Therapie',
@@ -36,10 +34,9 @@ const STEP_LABELS: Record<WorkflowStep, string> = {
 const SYMPTOM_FLOW_WITH_OPQRST: WorkflowStep[] = [
   'leitsymptom',
   'opqrst',
-  'redflags',
+  'ros',
   'differentials',
   'score',
-  'sampler',
   'status',
   'diagnostik',
   'treatment',
@@ -54,9 +51,7 @@ const SYMPTOM_FLOW_NO_OPQRST: WorkflowStep[] = SYMPTOM_FLOW_WITH_OPQRST.filter(
 const DIAGNOSIS_FLOW: WorkflowStep[] = [
   'leitdiagnose',
   'ros',
-  'redflags',
   'score',
-  'sampler',
   'status',
   'diagnostik',
   'treatment',
@@ -111,17 +106,11 @@ export function Workflow({ encounter }: { encounter: Encounter }) {
           {step === 'opqrst' && (
             <OpqrstStep enc={encounter} onAdvance={advance} onBack={back} />
           )}
-          {step === 'redflags' && (
-            <RedFlagsStep enc={encounter} onAdvance={advance} onBack={back} />
-          )}
           {step === 'differentials' && (
             <DifferentialsStep enc={encounter} onAdvance={advance} onBack={back} />
           )}
           {step === 'score' && (
             <ScoreStep enc={encounter} onAdvance={advance} onBack={back} />
-          )}
-          {step === 'sampler' && (
-            <SamplerStep enc={encounter} onAdvance={advance} onBack={back} />
           )}
           {step === 'status' && (
             <StatusStep enc={encounter} onAdvance={advance} onBack={back} />

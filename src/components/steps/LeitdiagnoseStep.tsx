@@ -29,7 +29,7 @@ export function LeitdiagnoseStep({
             >
               <div className="font-medium">{d.label}</div>
               <div className={`text-xs mt-0.5 ${active ? 'text-slate-200' : 'text-slate-500'}`}>
-                {d.reviewOfSymptoms.length} ROS-Items · {d.dischargeRules.length} Entlasskriterien
+                {d.highlightedRosKeys?.length ?? 0} ROS-Hinweise · {d.dischargeRules.length} Entlasskriterien
               </div>
             </button>
           );
