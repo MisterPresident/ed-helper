@@ -1,0 +1,15 @@
+Body System	Example Symptoms to Query	References
+Constitutional	Fever, chills, night sweats, fatigue, weight changes, appetite changes, malaise	
+Eyes	Vision changes, eye pain, redness, discharge, photophobia, diplopia	
+Ears, Nose, Throat	Hearing loss, tinnitus, ear pain, nasal congestion, epistaxis, sore throat, hoarseness, dysphagia	
+Cardiovascular	Chest pain, palpitations, orthopnea, paroxysmal nocturnal dyspnea, edema, claudication	
+Respiratory	Dyspnea, cough, sputum production, hemoptysis, wheezing, pleuritic pain	
+Gastrointestinal	Nausea, vomiting, diarrhea, constipation, abdominal pain, dyspepsia, hematemesis, melena, hematochezia, jaundice	
+Genitourinary	Dysuria, frequency, urgency, hematuria, incontinence, nocturia, discharge, sexual dysfunction	
+Musculoskeletal	Joint pain, stiffness, swelling, muscle pain, weakness, back pain, limitation of movement	
+Integumentary (Skin)	Rash, lesions, pruritus, changes in moles, bruising, hair or nail changes	
+Neurological	Headache, dizziness, syncope, seizures, weakness, numbness, tingling, tremor, gait disturbance, memory changes	
+Psychiatric	Mood changes, depression, anxiety, sleep disturbances, concentration difficulties, libido changes, suicidal ideation	
+Endocrine	Heat or cold intolerance, polyuria, polydipsia, polyphagia, thyroid symptoms	
+Hematologic/Lymphatic	Easy bruising, bleeding, lymphadenopathy, anemia symptoms	
+Allergic/Immunologic	Known allergies, allergic reactions, recurrent infections, immunodeficiency symptoms
