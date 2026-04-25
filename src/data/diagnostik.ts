@@ -1,5 +1,5 @@
 export type DiagnostikSection = {
-  key: 'ekg' | 'bga' | 'labor' | 'bildgebung' | 'weitere';
+  key: 'ekg' | 'bga' | 'labor' | 'bildgebung' | 'pocus' | 'weitere';
   label: string;
   placeholder: string;
   chips: string[];
@@ -90,6 +90,28 @@ export const DIAGNOSTIK_SECTIONS: DiagnostikSection[] = [
       'CT Abdomen',
       'MRT',
       'Doppler / KUS',
+    ],
+  },
+  {
+    key: 'pocus',
+    label: 'POCUS',
+    placeholder: 'z.B. Leber o.B., Gallenblase ohne Steine, Niere o.B., HKL bds. negativ, Perikarderguss negativ',
+    chips: [
+      'Leber',
+      'Gallenblase',
+      'Pankreas',
+      'Niere',
+      'Darm',
+      'Herz',
+      'o.B.',
+      'freie Flüssigkeit',
+      'Steine',
+      'Hydronephrose',
+      'Perikarderguss',
+      'Pleuraerguss',
+      'B-Lines',
+      'reduzierte LVEF',
+      'RV-Belastung',
     ],
   },
   {
