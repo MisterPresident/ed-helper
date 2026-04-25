@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useEncounters } from '../store/encounters';
+import { AuthContext } from '../lib/authContext';
 
 export function TabBar() {
+  const { logout } = useContext(AuthContext);
   const encounters = useEncounters((s) => s.encounters);
   const activeId = useEncounters((s) => s.activeId);
   const create = useEncounters((s) => s.createEncounter);
@@ -87,6 +89,9 @@ export function TabBar() {
       <p className="text-xs text-slate-400 mt-auto px-1">
         Doppelklick auf Name = umbenennen. Daten nur lokal im Browser.
       </p>
+      <button className="btn-outline text-xs mt-1 w-full" onClick={logout}>
+        Abmelden
+      </button>
     </aside>
   );
 }
