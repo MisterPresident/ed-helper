@@ -11,6 +11,7 @@ import { ScoreStep } from './steps/ScoreStep';
 import { SamplerStep } from './steps/SamplerStep';
 import { StatusStep } from './steps/StatusStep';
 import { DiagnostikStep } from './steps/DiagnostikStep';
+import { TreatmentStep } from './steps/TreatmentStep';
 import { DischargeStep } from './steps/DischargeStep';
 import { ProzedereStep } from './steps/ProzedereStep';
 import { SummaryBlock } from './SummaryBlock';
@@ -26,6 +27,7 @@ const STEP_LABELS: Record<WorkflowStep, string> = {
   sampler: 'SAMPLER',
   status: 'Status',
   diagnostik: 'Diagnostik',
+  treatment: 'Therapie',
   discharge: 'Entlassung',
   prozedere: 'Prozedere',
   summary: 'Summary',
@@ -40,6 +42,7 @@ const SYMPTOM_FLOW_WITH_OPQRST: WorkflowStep[] = [
   'sampler',
   'status',
   'diagnostik',
+  'treatment',
   'prozedere',
   'summary',
 ];
@@ -56,6 +59,7 @@ const DIAGNOSIS_FLOW: WorkflowStep[] = [
   'sampler',
   'status',
   'diagnostik',
+  'treatment',
   'discharge',
   'prozedere',
   'summary',
@@ -124,6 +128,9 @@ export function Workflow({ encounter }: { encounter: Encounter }) {
           )}
           {step === 'diagnostik' && (
             <DiagnostikStep enc={encounter} onAdvance={advance} onBack={back} />
+          )}
+          {step === 'treatment' && (
+            <TreatmentStep enc={encounter} onAdvance={advance} onBack={back} />
           )}
           {step === 'discharge' && (
             <DischargeStep enc={encounter} onAdvance={advance} onBack={back} />

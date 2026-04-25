@@ -13,6 +13,7 @@ export type WorkflowStep =
   | 'sampler'
   | 'status'
   | 'diagnostik'
+  | 'treatment'
   | 'discharge'
   | 'prozedere'
   | 'summary';
@@ -154,6 +155,16 @@ export type Diagnostik = {
   weitere: string;
 };
 
+export type Treatment = {
+  analgetika: string;
+  antibiotika: string;
+  antiepileptika: string;
+  antikoagulation: string;
+  kardiovaskulaer: string;
+  infusionen: string;
+  weitere: string;
+};
+
 export type Encounter = {
   id: EncounterId;
   label: string;
@@ -171,6 +182,7 @@ export type Encounter = {
   sampler?: Partial<SAMPLER>;
   status?: StatusFindings;
   diagnostik?: Partial<Diagnostik>;
+  treatment?: Partial<Treatment>;
   dischargeChecked?: Record<string, boolean>;
   prozedere?: string;
   prozedereChips?: string[];
