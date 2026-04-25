@@ -4,6 +4,7 @@ import type {
   DiagnosisKey,
   DifferentialState,
   Diagnostik,
+  Treatment,
   Encounter,
   EncounterId,
   OPQRST,
@@ -48,6 +49,7 @@ type Actions = {
     free?: string
   ) => void;
   patchDiagnostik: (id: EncounterId, patch: Partial<Diagnostik>) => void;
+  patchTreatment: (id: EncounterId, patch: Partial<Treatment>) => void;
   setDischarge: (id: EncounterId, key: string, checked: boolean) => void;
   setProzedere: (id: EncounterId, text: string) => void;
   setProzedereChips: (id: EncounterId, chips: string[]) => void;
@@ -191,6 +193,14 @@ export const useEncounters = create<State & Actions>()(
           patchEncounter(s, id, (e) => ({
             ...e,
             diagnostik: { ...(e.diagnostik ?? {}), ...patch },
+          }))
+        ),
+
+      patchTreatment: (id, patch) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            treatment: { ...(e.treatment ?? {}), ...patch },
           }))
         ),
 

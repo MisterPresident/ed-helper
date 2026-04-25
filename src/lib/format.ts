@@ -7,6 +7,7 @@ import { SCORES } from '../data/scores';
 import { OPQRST_FIELDS } from '../data/opqrst';
 import { STATUS_PALETTES } from '../data/status';
 import { DIAGNOSTIK_SECTIONS } from '../data/diagnostik';
+import { TREATMENT_SECTIONS } from '../data/treatment';
 import { formatTotal } from './score';
 
 export type FormatMode = 'sap' | 'plain';
@@ -85,6 +86,16 @@ function buildDiagnostik(enc: Encounter): string | null {
   const lines: string[] = [];
   for (const sec of DIAGNOSTIK_SECTIONS) {
     const v = enc.diagnostik?.[sec.key]?.trim();
+    if (v) lines.push(`- ${sec.label}: ${v}`);
+  }
+  return lines.length ? lines.join('\n') : null;
+}
+
+// ───────── Therapie ─────────
+function buildTreatment(enc: Encounter): string | null {
+  const lines: string[] = [];
+  for (const sec of TREATMENT_SECTIONS) {
+    const v = enc.treatment?.[sec.key]?.trim();
     if (v) lines.push(`- ${sec.label}: ${v}`);
   }
   return lines.length ? lines.join('\n') : null;
@@ -208,6 +219,9 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
 
   const diagnostik = buildDiagnostik(enc);
   if (diagnostik) sections.push({ title: 'Diagnostik', body: diagnostik });
+
+  const treatment = buildTreatment(enc);
+  if (treatment) sections.push({ title: 'Therapie', body: treatment });
 
   const redFlags = buildRedFlags(enc);
   if (redFlags) sections.push({ title: 'Red Flags', body: redFlags });
