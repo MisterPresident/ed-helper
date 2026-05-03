@@ -33,7 +33,6 @@ const joinSections = (sections: Section[], format: FormatMode): string =>
 function buildAnamnese(enc: Encounter): string {
   const lines: string[] = [];
   const sym = enc.leitsymptom ? SYMPTOMS_BY_KEY[enc.leitsymptom] : undefined;
-  const dx = enc.leitdiagnose ? DIAGNOSES_BY_KEY[enc.leitdiagnose] : undefined;
 
   if (sym) {
     const opq: string[] = [];
@@ -43,9 +42,6 @@ function buildAnamnese(enc: Encounter): string {
     }
     lines.push(`Leitsymptom: ${sym.label}${opq.length ? ` (${opq.join(', ')})` : ''}.`);
   }
-  if (dx) {
-    lines.push(`Leitdiagnose: ${dx.label}.`);
-  }
   const sampler = enc.sampler;
   if (sampler?.symptoms?.trim()) lines.push(sampler.symptoms.trim());
   if (sampler?.event?.trim()) lines.push(`Ereignis: ${sampler.event.trim()}.`);
@@ -53,6 +49,46 @@ function buildAnamnese(enc: Encounter): string {
   if (sampler?.lastMeal?.trim()) lines.push(`Letzte Mahlzeit: ${sampler.lastMeal.trim()}.`);
 
   return lines.join(' ');
+}
+
+// ───────── Vitals ─────────
+function buildVitals(enc: Encounter): string | null {
+  const v = enc.vitals;
+  if (!v) return null;
+  const parts: string[] = [];
+  const rrSys = v.rr_sys?.trim();
+  const rrDia = v.rr_dia?.trim();
+  if (rrSys || rrDia) parts.push(`RR ${rrSys ?? '?'}/${rrDia ?? '?'} mmHg`);
+  if (v.hr?.trim()) parts.push(`HF ${v.hr.trim()}/min`);
+  if (v.spo2?.trim()) parts.push(`SpO₂ ${v.spo2.trim()} %`);
+  if (v.rr?.trim()) parts.push(`AF ${v.rr.trim()}/min`);
+  if (v.temp?.trim()) parts.push(`Temp ${v.temp.trim()} °C`);
+  if (v.o2_supp?.trim()) parts.push(`O₂: ${v.o2_supp.trim()}`);
+  return parts.length ? parts.join('; ') : null;
+}
+
+// ───────── Hypothesen ─────────
+function buildHypothesen(enc: Encounter): string | null {
+  const dxs = enc.diagnoses ?? [];
+  if (dxs.length === 0) return null;
+  const lines: string[] = [];
+  for (const dx of dxs) {
+    const def = DIAGNOSES_BY_KEY[dx.key];
+    if (!def) continue;
+    const statusLabel =
+      dx.status === 'confirmed'
+        ? 'bestätigt'
+        : dx.status === 'excluded'
+          ? 'ausgeschlossen'
+          : 'V.a.';
+    const sev = def.severityClassifier?.(enc) ?? null;
+    const sevPart = sev
+      ? ` (${sev.stage}${sev.basedOn.length ? ' — ' + sev.basedOn.join(', ') : ''})`
+      : '';
+    const note = dx.note?.trim() ? ` — ${dx.note.trim()}` : '';
+    lines.push(`- ${def.label}: ${statusLabel}${sevPart}${note}`);
+  }
+  return lines.join('\n');
 }
 
 // ───────── Status ─────────
@@ -129,13 +165,14 @@ function buildTreatment(enc: Encounter): string | null {
 
 // ───────── Red Flags (per-flag negativ/positiv) ─────────
 function flagKeysFor(enc: Encounter): string[] {
-  if (enc.pathway === 'diagnosis' && enc.leitdiagnose) {
-    return DIAGNOSES_BY_KEY[enc.leitdiagnose]?.redFlagKeys ?? [];
+  const set = new Set<string>();
+  if (enc.leitsymptom) {
+    for (const k of SYMPTOMS_BY_KEY[enc.leitsymptom]?.redFlagKeys ?? []) set.add(k);
   }
-  if (enc.pathway === 'symptom' && enc.leitsymptom) {
-    return SYMPTOMS_BY_KEY[enc.leitsymptom]?.redFlagKeys ?? [];
+  for (const dx of enc.diagnoses ?? []) {
+    for (const k of DIAGNOSES_BY_KEY[dx.key]?.redFlagKeys ?? []) set.add(k);
   }
-  return [];
+  return Array.from(set);
 }
 
 function buildRedFlags(enc: Encounter): string | null {
@@ -181,7 +218,7 @@ function buildScores(enc: Encounter, detail: DetailMode): string | null {
 
 // ───────── DDx ─────────
 function buildDDx(enc: Encounter): string | null {
-  if (enc.pathway !== 'symptom' || !enc.leitsymptom) {
+  if (!enc.leitsymptom) {
     return enc.differentialsFree?.trim() || null;
   }
   const sym = SYMPTOMS_BY_KEY[enc.leitsymptom];
@@ -197,16 +234,26 @@ function buildDDx(enc: Encounter): string | null {
   return lines.length ? lines.join('\n') : null;
 }
 
-// ───────── Entlassungskriterien (Diagnose-Pfad) ─────────
+// ───────── Entlassungskriterien (per confirmed diagnosis) ─────────
 function buildDischarge(enc: Encounter): string | null {
-  if (enc.pathway !== 'diagnosis' || !enc.leitdiagnose) return null;
-  const dx = DIAGNOSES_BY_KEY[enc.leitdiagnose];
-  if (!dx || dx.dischargeRules.length === 0) return null;
-  const lines = dx.dischargeRules.map((rule, idx) => {
-    const checked = !!enc.dischargeChecked?.[`dc_${idx}`];
-    return `- ${checked ? '☑' : '☐'} ${rule}`;
-  });
-  return lines.join('\n');
+  const confirmed = (enc.diagnoses ?? []).filter((d) => d.status === 'confirmed');
+  if (confirmed.length === 0) return null;
+  const blocks: string[] = [];
+  for (const dx of confirmed) {
+    const def = DIAGNOSES_BY_KEY[dx.key];
+    if (!def || def.dischargeRules.length === 0) continue;
+    const sev = def.severityClassifier?.(enc) ?? null;
+    const header = sev
+      ? `${def.label} — ${sev.stage}${sev.basedOn.length ? ' (' + sev.basedOn.join(', ') + ')' : ''}`
+      : def.label;
+    const lines = [header];
+    def.dischargeRules.forEach((rule, idx) => {
+      const checked = !!enc.dischargeChecked?.[`${dx.key}:${idx}`];
+      lines.push(`- ${checked ? '☑' : '☐'} ${rule}`);
+    });
+    blocks.push(lines.join('\n'));
+  }
+  return blocks.length ? blocks.join('\n\n') : null;
 }
 
 // ───────── Prozedere ─────────
@@ -230,6 +277,12 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
 
   const anamnese = buildAnamnese(enc);
   if (anamnese) sections.push({ title: 'Anamnese', body: anamnese });
+
+  const vitals = buildVitals(enc);
+  if (vitals) sections.push({ title: 'Vitalwerte', body: vitals });
+
+  const hypothesen = buildHypothesen(enc);
+  if (hypothesen) sections.push({ title: 'Hypothesen', body: hypothesen });
 
   const ros = buildRos(enc);
   if (ros) sections.push({ title: 'Anamnese (ROS)', body: ros });

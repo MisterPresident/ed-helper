@@ -5,6 +5,8 @@ import { RED_FLAGS } from '../data/redFlags';
 import { SYMPTOMS_BY_KEY } from '../data/symptoms';
 import { DIAGNOSES_BY_KEY } from '../data/diagnoses';
 import { useEncounters } from '../store/encounters';
+import { VitalsStrip } from './VitalsStrip';
+import { DiagnosesStrip } from './DiagnosesStrip';
 
 const flagCycle: Record<RedFlagState, RedFlagState> = {
   unknown: 'excluded',
@@ -47,12 +49,15 @@ function SamplerPanel({ enc }: { enc: Encounter }) {
 function RedFlagsPanel({ enc }: { enc: Encounter }) {
   const setFlag = useEncounters((s) => s.setRedFlag);
 
-  let keys: string[] = [];
-  if (enc.pathway === 'symptom' && enc.leitsymptom) {
-    keys = SYMPTOMS_BY_KEY[enc.leitsymptom]?.redFlagKeys ?? [];
-  } else if (enc.pathway === 'diagnosis' && enc.leitdiagnose) {
-    keys = DIAGNOSES_BY_KEY[enc.leitdiagnose]?.redFlagKeys ?? [];
+  // Union of red flags from the Leitsymptom + every active diagnosis (any status).
+  const keySet = new Set<string>();
+  if (enc.leitsymptom) {
+    for (const k of SYMPTOMS_BY_KEY[enc.leitsymptom]?.redFlagKeys ?? []) keySet.add(k);
   }
+  for (const dx of enc.diagnoses ?? []) {
+    for (const k of DIAGNOSES_BY_KEY[dx.key]?.redFlagKeys ?? []) keySet.add(k);
+  }
+  const keys = Array.from(keySet);
 
   if (keys.length === 0) {
     return (
@@ -117,7 +122,13 @@ function Section({
 export function SidePanel({ enc }: { enc: Encounter }) {
   return (
     <aside className="hidden lg:flex w-80 shrink-0 border-l border-slate-200 bg-slate-50 flex-col gap-2 p-3 overflow-y-auto">
-      <Section title="SAMPLER">
+      <Section title="Vitalwerte">
+        <VitalsStrip enc={enc} />
+      </Section>
+      <Section title="Hypothesen">
+        <DiagnosesStrip enc={enc} />
+      </Section>
+      <Section title="SAMPLER" defaultOpen={false}>
         <SamplerPanel enc={enc} />
       </Section>
       <Section title="Red Flags" defaultOpen={false}>

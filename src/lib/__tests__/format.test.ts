@@ -8,7 +8,6 @@ const baseEnc = (overrides: Partial<Encounter> = {}): Encounter => ({
   id: 'test',
   label: 'Bett 3',
   createdAt: 0,
-  pathway: 'symptom',
   step: 'summary',
   ...overrides,
 });
@@ -180,18 +179,34 @@ describe('buildSummary — DDx', () => {
   });
 });
 
-describe('buildSummary — Diagnose pathway', () => {
-  it('renders Leitdiagnose and Entlassungskriterien with checked state', () => {
+describe('buildSummary — confirmed diagnosis discharge', () => {
+  it('renders Hypothesen and per-diagnosis Entlassungskriterien with checked state', () => {
     const enc = baseEnc({
-      pathway: 'diagnosis',
-      leitdiagnose: 'hypoglykaemie',
-      dischargeChecked: { dc_0: true, dc_1: true },
+      diagnoses: [
+        { key: 'hypoglykaemie', status: 'confirmed', addedAt: 0 },
+      ],
+      dischargeChecked: { 'hypoglykaemie:0': true, 'hypoglykaemie:1': true },
     });
     const s = buildSummary(enc);
-    expect(s).toContain('Leitdiagnose: Hypoglykämie');
+    expect(s).toContain('<u>Hypothesen:</>');
+    expect(s).toContain('Hypoglykämie: bestätigt');
     expect(s).toContain('<u>Entlassungskriterien:</>');
     expect(s).toContain('☑');
     expect(s).toContain('☐');
+  });
+
+  it('lists multiple parallel hypotheses with statuses', () => {
+    const enc = baseEnc({
+      diagnoses: [
+        { key: 'hypoglykaemie', status: 'confirmed', addedAt: 0 },
+        { key: 'hypertonie', status: 'suspected', addedAt: 1 },
+        { key: 'hyperglykaemie', status: 'excluded', addedAt: 2 },
+      ],
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('Hypoglykämie: bestätigt');
+    expect(s).toContain('Hypertonie: V.a.');
+    expect(s).toContain('Hyperglykämie: ausgeschlossen');
   });
 });
 

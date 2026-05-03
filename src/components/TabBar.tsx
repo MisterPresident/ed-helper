@@ -16,11 +16,8 @@ export function TabBar() {
 
   return (
     <aside className="w-56 shrink-0 border-r border-slate-200 bg-white p-3 flex flex-col gap-2 overflow-y-auto">
-      <button className="btn-primary" onClick={() => create({ pathway: 'symptom' })}>
-        + Leitsymptom
-      </button>
-      <button className="btn-outline" onClick={() => create({ pathway: 'diagnosis' })}>
-        + Leitdiagnose
+      <button className="btn-primary" onClick={() => create()}>
+        + Patient
       </button>
       <div className="flex flex-col gap-1 mt-1">
         {encounters.length === 0 && (

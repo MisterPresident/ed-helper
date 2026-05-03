@@ -8,30 +8,13 @@ export function Home() {
       <div className="max-w-xl w-full text-center">
         <h2 className="text-xl font-semibold mb-2">Neuen Patienten anlegen</h2>
         <p className="text-sm text-slate-500 mb-6">
-          Zwei Pfade: entweder über das Leitsymptom (Workup) oder direkt über die
-          Verdachtsdiagnose (z.&nbsp;B. Hypoglykämie).
+          Workflow: Leitsymptom → OPQRST → ROS → DDx → Scores → Status → Diagnostik →
+          Therapie → Entlassung → Prozedere. Verdachtsdiagnosen werden parallel im
+          Hypothesen-Strip rechts geführt.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            className="card hover:border-slate-900 text-left transition"
-            onClick={() => create({ pathway: 'symptom' })}
-          >
-            <div className="text-lg font-semibold">+ Leitsymptom</div>
-            <p className="text-sm text-slate-500 mt-1">
-              OPQRST → Red Flags → DDx → Score → SAMPLER → Status → Diagnostik → Prozedere.
-            </p>
-          </button>
-          <button
-            className="card hover:border-slate-900 text-left transition"
-            onClick={() => create({ pathway: 'diagnosis' })}
-          >
-            <div className="text-lg font-semibold">+ Leitdiagnose</div>
-            <p className="text-sm text-slate-500 mt-1">
-              ROS → Red Flags → Score → SAMPLER → Status → Diagnostik →
-              Entlassungskriterien → Prozedere.
-            </p>
-          </button>
-        </div>
+        <button className="btn-primary text-base px-6 py-3" onClick={() => create()}>
+          + Patient anlegen
+        </button>
       </div>
     </div>
   );

@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
+  ActiveDiagnosis,
   BgaValues,
   DiagnosisKey,
   DifferentialState,
   Diagnostik,
-  Treatment,
+  DxStatus,
   Encounter,
   EncounterId,
   OPQRST,
-  Pathway,
   RedFlagKey,
   RedFlagState,
   RosState,
@@ -18,6 +18,8 @@ import type {
   ScoreResult,
   StatusSystemKey,
   SymptomKey,
+  Treatment,
+  Vitals,
   WorkflowStep,
 } from '../types';
 import { newId } from '../lib/id';
@@ -28,15 +30,18 @@ type State = {
 };
 
 type Actions = {
-  createEncounter: (opts?: { label?: string; pathway?: Pathway }) => EncounterId;
+  createEncounter: (opts?: { label?: string }) => EncounterId;
   removeEncounter: (id: EncounterId) => void;
   setActive: (id: EncounterId | null) => void;
   renameEncounter: (id: EncounterId, label: string) => void;
   setStep: (id: EncounterId, step: WorkflowStep) => void;
-  setPathway: (id: EncounterId, pathway: Pathway) => void;
   setLeitsymptom: (id: EncounterId, key: SymptomKey) => void;
-  setLeitdiagnose: (id: EncounterId, key: DiagnosisKey) => void;
   patchOpqrst: (id: EncounterId, patch: Partial<OPQRST>) => void;
+  setVital: (id: EncounterId, key: keyof Vitals, value: string) => void;
+  addDiagnosis: (id: EncounterId, key: DiagnosisKey, status?: DxStatus) => void;
+  setDiagnosisStatus: (id: EncounterId, key: DiagnosisKey, status: DxStatus) => void;
+  setDiagnosisNote: (id: EncounterId, key: DiagnosisKey, note: string) => void;
+  removeDiagnosis: (id: EncounterId, key: DiagnosisKey) => void;
   setRos: (id: EncounterId, key: string, state: RosState) => void;
   setRedFlag: (id: EncounterId, key: RedFlagKey, state: RedFlagState) => void;
   setDifferential: (id: EncounterId, key: string, state: DifferentialState) => void;
@@ -77,13 +82,11 @@ export const useEncounters = create<State & Actions>()(
 
       createEncounter: (opts) => {
         const id = newId();
-        const pathway: Pathway = opts?.pathway ?? 'symptom';
         const enc: Encounter = {
           id,
           label: opts?.label?.trim() || nextLabel(get().encounters),
           createdAt: Date.now(),
-          pathway,
-          step: pathway === 'diagnosis' ? 'leitdiagnose' : 'leitsymptom',
+          step: 'leitsymptom',
         };
         set((s) => ({ encounters: [...s.encounters, enc], activeId: id }));
         return id;
@@ -110,21 +113,60 @@ export const useEncounters = create<State & Actions>()(
       setStep: (id, step) =>
         set((s) => patchEncounter(s, id, (e) => ({ ...e, step }))),
 
-      setPathway: (id, pathway) =>
-        set((s) => patchEncounter(s, id, (e) => ({ ...e, pathway }))),
-
       setLeitsymptom: (id, key) =>
-        set((s) => patchEncounter(s, id, (e) => ({ ...e, leitsymptom: key })),
-        ),
-
-      setLeitdiagnose: (id, key) =>
-        set((s) => patchEncounter(s, id, (e) => ({ ...e, leitdiagnose: key }))),
+        set((s) => patchEncounter(s, id, (e) => ({ ...e, leitsymptom: key }))),
 
       patchOpqrst: (id, patch) =>
         set((s) =>
           patchEncounter(s, id, (e) => ({
             ...e,
             opqrst: { ...(e.opqrst ?? {}), ...patch },
+          }))
+        ),
+
+      setVital: (id, key, value) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            vitals: { ...(e.vitals ?? {}), [key]: value },
+          }))
+        ),
+
+      addDiagnosis: (id, key, status = 'suspected') =>
+        set((s) =>
+          patchEncounter(s, id, (e) => {
+            const existing = e.diagnoses ?? [];
+            if (existing.some((d) => d.key === key)) return e;
+            const dx: ActiveDiagnosis = { key, status, addedAt: Date.now() };
+            return { ...e, diagnoses: [...existing, dx] };
+          })
+        ),
+
+      setDiagnosisStatus: (id, key, status) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            diagnoses: (e.diagnoses ?? []).map((d) =>
+              d.key === key ? { ...d, status } : d
+            ),
+          }))
+        ),
+
+      setDiagnosisNote: (id, key, note) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            diagnoses: (e.diagnoses ?? []).map((d) =>
+              d.key === key ? { ...d, note } : d
+            ),
+          }))
+        ),
+
+      removeDiagnosis: (id, key) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            diagnoses: (e.diagnoses ?? []).filter((d) => d.key !== key),
           }))
         ),
 
@@ -237,7 +279,7 @@ export const useEncounters = create<State & Actions>()(
     }),
     {
       name: 'er-helper:encounters:v1',
-      version: 3,
+      version: 4,
     }
   )
 );

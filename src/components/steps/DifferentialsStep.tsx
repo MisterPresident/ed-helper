@@ -31,9 +31,11 @@ export function DifferentialsStep({
 }) {
   const setDD = useEncounters((s) => s.setDifferential);
   const setFree = useEncounters((s) => s.setDifferentialsFree);
+  const addDx = useEncounters((s) => s.addDiagnosis);
 
   const sym = enc.leitsymptom ? SYMPTOMS_BY_KEY[enc.leitsymptom] : undefined;
   const ddx = sym?.differentials ?? [];
+  const activeKeys = new Set((enc.diagnoses ?? []).map((d) => d.key));
 
   return (
     <div className="card">
@@ -64,22 +66,39 @@ export function DifferentialsStep({
         <div className="space-y-1.5">
           {ddx.map((d) => {
             const state: DifferentialState = enc.differentials?.[d.key] ?? 'unknown';
+            const promotable = !!d.diagnosisKey && !activeKeys.has(d.diagnosisKey);
             return (
-              <button
+              <div
                 key={d.key}
-                onClick={() => setDD(enc.id, d.key, cycle[state])}
-                className={`w-full text-left rounded-md border px-3 py-2 transition ${styles[state]}`}
+                className={`rounded-md border px-3 py-2 transition ${styles[state]}`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
+                  <button
+                    className="flex-1 text-left"
+                    onClick={() => setDD(enc.id, d.key, cycle[state])}
+                  >
                     <div className="font-medium text-sm">{d.label}</div>
                     {d.hint && <div className="text-xs opacity-75">{d.hint}</div>}
+                  </button>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {promotable && (
+                      <button
+                        className="text-[10px] uppercase tracking-wide rounded border border-current px-1.5 py-0.5 hover:bg-white/40"
+                        onClick={(ev) => {
+                          ev.stopPropagation();
+                          addDx(enc.id, d.diagnosisKey!, 'suspected');
+                        }}
+                        title="Als Verdachtsdiagnose in den Hypothesen-Strip übernehmen"
+                      >
+                        → V.a.
+                      </button>
+                    )}
+                    <span className="text-xs font-semibold uppercase tracking-wide">
+                      {labels[state]}
+                    </span>
                   </div>
-                  <span className="shrink-0 text-xs font-semibold uppercase tracking-wide">
-                    {labels[state]}
-                  </span>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>

@@ -2,7 +2,6 @@ import type { Encounter, WorkflowStep } from '../types';
 import { SYMPTOMS_BY_KEY } from '../data/symptoms';
 import { useEncounters } from '../store/encounters';
 import { LeitsymptomStep } from './steps/LeitsymptomStep';
-import { LeitdiagnoseStep } from './steps/LeitdiagnoseStep';
 import { RosStep } from './steps/RosStep';
 import { OpqrstStep } from './steps/OpqrstStep';
 import { DifferentialsStep } from './steps/DifferentialsStep';
@@ -16,13 +15,10 @@ import { SummaryBlock } from './SummaryBlock';
 
 const STEP_LABELS: Record<WorkflowStep, string> = {
   leitsymptom: 'Leitsymptom',
-  leitdiagnose: 'Leitdiagnose',
   ros: 'ROS',
   opqrst: 'OPQRST',
-  redflags: 'Red Flags', // legacy, no longer in active sequences (lives in SidePanel)
   differentials: 'DDx',
   score: 'Scores',
-  sampler: 'SAMPLER', // legacy, lives in SidePanel
   status: 'Status',
   diagnostik: 'Diagnostik',
   treatment: 'Therapie',
@@ -31,26 +27,11 @@ const STEP_LABELS: Record<WorkflowStep, string> = {
   summary: 'Summary',
 };
 
-const SYMPTOM_FLOW_WITH_OPQRST: WorkflowStep[] = [
+const FLOW_WITH_OPQRST: WorkflowStep[] = [
   'leitsymptom',
   'opqrst',
   'ros',
   'differentials',
-  'score',
-  'status',
-  'diagnostik',
-  'treatment',
-  'prozedere',
-  'summary',
-];
-
-const SYMPTOM_FLOW_NO_OPQRST: WorkflowStep[] = SYMPTOM_FLOW_WITH_OPQRST.filter(
-  (s) => s !== 'opqrst'
-);
-
-const DIAGNOSIS_FLOW: WorkflowStep[] = [
-  'leitdiagnose',
-  'ros',
   'score',
   'status',
   'diagnostik',
@@ -60,10 +41,11 @@ const DIAGNOSIS_FLOW: WorkflowStep[] = [
   'summary',
 ];
 
+const FLOW_NO_OPQRST: WorkflowStep[] = FLOW_WITH_OPQRST.filter((s) => s !== 'opqrst');
+
 function stepsFor(enc: Encounter): WorkflowStep[] {
-  if (enc.pathway === 'diagnosis') return DIAGNOSIS_FLOW;
   const sym = enc.leitsymptom ? SYMPTOMS_BY_KEY[enc.leitsymptom] : undefined;
-  return sym?.usesOPQRST === false ? SYMPTOM_FLOW_NO_OPQRST : SYMPTOM_FLOW_WITH_OPQRST;
+  return sym?.usesOPQRST === false ? FLOW_NO_OPQRST : FLOW_WITH_OPQRST;
 }
 
 function nextStep(enc: Encounter, current: WorkflowStep): WorkflowStep {
@@ -98,9 +80,6 @@ export function Workflow({ encounter }: { encounter: Encounter }) {
         <div className="mt-4">
           {step === 'leitsymptom' && (
             <LeitsymptomStep enc={encounter} onAdvance={advance} />
-          )}
-          {step === 'leitdiagnose' && (
-            <LeitdiagnoseStep enc={encounter} onAdvance={advance} />
           )}
           {step === 'ros' && <RosStep enc={encounter} onAdvance={advance} onBack={back} />}
           {step === 'opqrst' && (

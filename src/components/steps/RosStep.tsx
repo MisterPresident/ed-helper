@@ -36,14 +36,14 @@ export function RosStep({
 
   const highlighted = useMemo<Set<string>>(() => {
     const keys: string[] = [];
-    if (enc.pathway === 'symptom' && enc.leitsymptom) {
+    if (enc.leitsymptom) {
       keys.push(...(SYMPTOMS_BY_KEY[enc.leitsymptom]?.highlightedRosKeys ?? []));
     }
-    if (enc.pathway === 'diagnosis' && enc.leitdiagnose) {
-      keys.push(...(DIAGNOSES_BY_KEY[enc.leitdiagnose]?.highlightedRosKeys ?? []));
+    for (const dx of enc.diagnoses ?? []) {
+      keys.push(...(DIAGNOSES_BY_KEY[dx.key]?.highlightedRosKeys ?? []));
     }
     return new Set(keys);
-  }, [enc.pathway, enc.leitsymptom, enc.leitdiagnose]);
+  }, [enc.leitsymptom, enc.diagnoses]);
 
   const [onlyHighlighted, setOnlyHighlighted] = useState(false);
 

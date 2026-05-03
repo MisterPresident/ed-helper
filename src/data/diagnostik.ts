@@ -134,6 +134,7 @@ export const BGA_FIELDS: BgaFieldDef[] = [
   { key: 'k', label: 'K⁺', unit: 'mmol/L', refLow: 3.5, refHigh: 5.0 },
   { key: 'glc', label: 'Glc', unit: 'mg/dL', refLow: 70, refHigh: 110 },
   { key: 'hb', label: 'Hb', unit: 'g/dL', refLow: 12, refHigh: 18 },
+  { key: 'creat', label: 'Kreatinin', unit: 'mg/dL', refLow: 0.7, refHigh: 1.2 },
 ];
 
 export function isBgaAbnormal(field: BgaFieldDef, raw: string | undefined): boolean {

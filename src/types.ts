@@ -1,16 +1,11 @@
 export type EncounterId = string;
 
-export type Pathway = 'symptom' | 'diagnosis';
-
 export type WorkflowStep =
   | 'leitsymptom'
-  | 'leitdiagnose'
   | 'ros'
   | 'opqrst'
-  | 'redflags'
   | 'differentials'
   | 'score'
-  | 'sampler'
   | 'status'
   | 'diagnostik'
   | 'treatment'
@@ -61,6 +56,16 @@ export type SAMPLER = {
   lastMeal: string;
   event: string;
   risiko: string;
+};
+
+export type Vitals = {
+  rr_sys: string;
+  rr_dia: string;
+  hr: string;
+  spo2: string;
+  rr: string;
+  temp: string;
+  o2_supp: string;
 };
 
 export type RedFlagState = 'positive' | 'excluded' | 'unknown';
@@ -123,6 +128,9 @@ export type DifferentialDx = {
   key: string;
   label: string;
   hint?: string;
+  /** Optional link from a DDx item to a full DiagnosisDef so it can be
+   * promoted into the active-diagnoses list with one click. */
+  diagnosisKey?: DiagnosisKey;
 };
 
 export type DifferentialState = 'positive' | 'excluded' | 'unknown';
@@ -169,6 +177,16 @@ export type SymptomDef = {
   highlightedRosKeys?: string[];
 };
 
+// ───────── Severity classifiers ─────────
+export type SeverityTier = 'mild' | 'moderate' | 'severe' | 'critical';
+
+export type SeverityResult = {
+  stage: string;
+  label: string;
+  basedOn: string[];
+  severity: SeverityTier;
+};
+
 export type DiagnosisDef = {
   key: DiagnosisKey;
   label: string;
@@ -177,6 +195,18 @@ export type DiagnosisDef = {
   dischargeRules: string[];
   treatmentUrl?: string;
   highlightedRosKeys?: string[];
+  /** Pure function: read encounter values, derive a clinical stage. */
+  severityClassifier?: (enc: Encounter) => SeverityResult | null;
+};
+
+// ───────── Active diagnoses (parallel hypothesis workup) ─────────
+export type DxStatus = 'suspected' | 'confirmed' | 'excluded';
+
+export type ActiveDiagnosis = {
+  key: DiagnosisKey;
+  status: DxStatus;
+  addedAt: number;
+  note?: string;
 };
 
 // ───────── Diagnostik (incl. structured BGA) ─────────
@@ -191,10 +221,12 @@ export type BgaValues = {
   k: string;
   glc: string;
   hb: string;
+  creat: string;
 };
 
 export type Diagnostik = {
   ekg: string;
+  ekgChanges: boolean; // hyperkalemic ECG changes (drives Hyperkaliämie classifier)
   bga: string;
   bgaValues: Partial<BgaValues>;
   labor: string;
@@ -217,10 +249,11 @@ export type Encounter = {
   id: EncounterId;
   label: string;
   createdAt: number;
-  pathway: Pathway;
   step: WorkflowStep;
   leitsymptom?: SymptomKey;
-  leitdiagnose?: DiagnosisKey;
+  /** active hypotheses, parallel to leitsymptom; user adds/removes during workup */
+  diagnoses?: ActiveDiagnosis[];
+  vitals?: Partial<Vitals>;
   opqrst?: Partial<OPQRST>;
   ros?: Record<string, RosState>;
   redFlags?: Record<RedFlagKey, RedFlagState>;
@@ -231,6 +264,7 @@ export type Encounter = {
   status?: StatusFindings;
   diagnostik?: Partial<Diagnostik>;
   treatment?: Partial<Treatment>;
+  /** discharge checks per diagnosis: keyed `${diagnosisKey}:${ruleIdx}` */
   dischargeChecked?: Record<string, boolean>;
   prozedere?: string;
   prozedereChips?: string[];
