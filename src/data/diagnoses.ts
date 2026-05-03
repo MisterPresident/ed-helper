@@ -1,4 +1,13 @@
 import type { DiagnosisDef } from '../types';
+import {
+  classifyAKI,
+  classifyDKA,
+  classifyHypoglyk,
+  classifyHyponat,
+  classifyHyperkal,
+  classifyHypernat,
+  classifyHypertonie,
+} from './severity';
 
 export const DIAGNOSES: DiagnosisDef[] = [
   {
@@ -34,6 +43,7 @@ export const DIAGNOSES: DiagnosisDef[] = [
       'Patient ist schriftlich über Red Flags informiert',
     ],
     treatmentUrl: 'https://register.awmf.org/de/leitlinien/detail/046-001',
+    severityClassifier: classifyHypertonie,
   },
   {
     key: 'hyperglykaemie',
@@ -62,6 +72,7 @@ export const DIAGNOSES: DiagnosisDef[] = [
       'Diabetologische Nachsorge organisiert',
     ],
     treatmentUrl: 'https://register.awmf.org/de/leitlinien/detail/057-013',
+    severityClassifier: classifyDKA,
   },
   {
     key: 'hypoglykaemie',
@@ -89,6 +100,7 @@ export const DIAGNOSES: DiagnosisDef[] = [
       'Betreuungsperson zu Hause anwesend',
     ],
     treatmentUrl: 'https://register.awmf.org/de/leitlinien/detail/057-013',
+    severityClassifier: classifyHypoglyk,
   },
   {
     key: 'hypernatriaemie',
@@ -116,6 +128,105 @@ export const DIAGNOSES: DiagnosisDef[] = [
       'Nachkontrolle Elektrolyte innerhalb 24 h gesichert',
     ],
     treatmentUrl: 'https://www.uptodate.com/contents/treatment-of-hypernatremia-in-adults',
+    severityClassifier: classifyHypernat,
+  },
+  {
+    key: 'hyponatriaemie',
+    label: 'Hyponatriämie',
+    highlightedRosKeys: [
+      'ros_neu_kopfschmerz',
+      'ros_neu_gedaechtnis',
+      'ros_neu_vigilanz',
+      'ros_neu_krampf',
+      'ros_gi_uebelkeit',
+      'ros_gi_erbrechen',
+      'ros_const_muedigkeit',
+      'ros_msk_muskel',
+    ],
+    redFlagKeys: [],
+    recommendedScores: [],
+    dischargeRules: [
+      'Serum-Na ≥ 125 mmol/L und stabil',
+      'Korrekturgeschwindigkeit ≤ 8–10 mmol/L pro 24 h eingehalten',
+      'Keine relevanten neurologischen Symptome (Vigilanz, Krampfanfall)',
+      'Reversible Ursache adressiert (Thiazid abgesetzt, SIADH-Trigger geklärt)',
+      'Hausärztliche / nephrologische Nachsorge geplant',
+      'Nachkontrolle Elektrolyte innerhalb 24 h gesichert',
+    ],
+    severityClassifier: classifyHyponat,
+  },
+  {
+    key: 'hyperkaliaemie',
+    label: 'Hyperkaliämie',
+    highlightedRosKeys: [
+      'ros_msk_muskel',
+      'ros_neu_taubheit',
+      'ros_neu_schwaeche',
+      'ros_cv_palpitationen',
+    ],
+    redFlagKeys: [],
+    recommendedScores: [],
+    dischargeRules: [
+      'K⁺ < 5,5 mmol/L stabil über ≥ 2 Messungen',
+      'Keine EKG-Veränderungen (regelmäßige Verlaufs-EKGs)',
+      'Auslösende Medikation identifiziert/pausiert (ACE-Hemmer, Spironolacton, NSAR)',
+      'Nierenfunktion stabil',
+      'Nachkontrolle Elektrolyte innerhalb 24 h',
+      'Patient ist über Warnzeichen (Schwäche, Palpitationen) aufgeklärt',
+    ],
+    severityClassifier: classifyHyperkal,
+  },
+  {
+    key: 'dka',
+    label: 'Diabetische Ketoazidose (DKA)',
+    highlightedRosKeys: [
+      'ros_endo_polyurie',
+      'ros_endo_polydipsie',
+      'ros_gi_uebelkeit',
+      'ros_gi_erbrechen',
+      'ros_gi_bauchschmerz',
+      'ros_resp_dyspnoe',
+      'ros_neu_vigilanz',
+      'ros_const_muedigkeit',
+    ],
+    redFlagKeys: [],
+    recommendedScores: ['gcs', 'qsofa'],
+    dischargeRules: [
+      'pH ≥ 7,30 und HCO₃ ≥ 18 mmol/L stabil',
+      'Anionenlücke geschlossen',
+      'BZ < 200 mg/dL und Trend stabil',
+      'Patient kann oral Nahrung aufnehmen',
+      'Subkutanes Insulinregime etabliert (Überlappung mit i.v. ≥ 1–2 h)',
+      'Auslöser geklärt (Infekt, Compliance, neue Diagnose)',
+      'Diabetologische Nachsorge organisiert',
+    ],
+    treatmentUrl: 'https://care.diabetesjournals.org/content/early/2024/05/01/dci24-0032',
+    severityClassifier: classifyDKA,
+  },
+  {
+    key: 'aki',
+    label: 'Akute Nierenschädigung (AKI)',
+    highlightedRosKeys: [
+      'ros_uro_haematurie',
+      'ros_uro_dysurie',
+      'ros_const_muedigkeit',
+      'ros_gi_uebelkeit',
+      'ros_gi_erbrechen',
+      'ros_resp_dyspnoe',
+      'ros_cv_oedeme',
+    ],
+    redFlagKeys: [],
+    recommendedScores: [],
+    dischargeRules: [
+      'Kreatinin rückläufig oder stabil im akzeptablen Bereich',
+      'Diurese ≥ 0,5 mL/kg/h sicher dokumentiert',
+      'Keine Hyperkaliämie / metabolische Azidose',
+      'Auslöser identifiziert (Volumenmangel, nephrotoxische Medikation, postrenal)',
+      'Nephrotoxische Medikation pausiert',
+      'Nephrologische Nachsorge / Hausarzt innerhalb 7 Tagen geplant',
+    ],
+    treatmentUrl: 'https://kdigo.org/wp-content/uploads/2016/10/KDIGO-2012-AKI-Guideline-English.pdf',
+    severityClassifier: classifyAKI,
   },
 ];
 

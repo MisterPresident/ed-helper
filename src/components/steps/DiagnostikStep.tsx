@@ -114,6 +114,31 @@ function FlatChipsEditor({
   );
 }
 
+function EkgChangesToggle({ enc }: { enc: Encounter }) {
+  const patch = useEncounters((s) => s.patchDiagnostik);
+  const checked = !!enc.diagnostik?.ekgChanges;
+  return (
+    <label
+      className={`card flex items-center gap-2 cursor-pointer text-sm ${
+        checked ? 'border-danger-600 bg-danger-50 text-danger-700' : ''
+      }`}
+    >
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => patch(enc.id, { ekgChanges: e.target.checked })}
+        className="accent-danger-600"
+      />
+      <span>
+        Hyperkaliämie-typische EKG-Veränderungen
+        <span className="text-xs text-slate-500 ml-1">
+          (hohe spitze T, abgeflachte P, QRS-Verbreiterung, Sinuswelle)
+        </span>
+      </span>
+    </label>
+  );
+}
+
 function BgaEditor({ enc }: { enc: Encounter }) {
   const setBga = useEncounters((s) => s.setBgaValue);
   const patch = useEncounters((s) => s.patchDiagnostik);
@@ -184,6 +209,7 @@ export function DiagnostikStep({
         label="EKG"
         placeholder="SR, 78/min, PQ 160, QRS 90, QT normal, keine ST-Dynamik"
       />
+      <EkgChangesToggle enc={enc} />
 
       <BgaEditor enc={enc} />
 
