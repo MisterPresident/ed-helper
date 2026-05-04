@@ -186,6 +186,72 @@ describe('Ottawa Ankle Rules', () => {
   });
 });
 
+describe('CURB-65', () => {
+  const d = SCORES.curb65;
+  it('min=0 max=5', () => {
+    expect(minOf(d)).toBe(0);
+    expect(maxOf(d)).toBe(5);
+  });
+  it('bands: 0-1 niedrig, 2 mittel, 3+ hoch', () => {
+    expect(d.interpret(1).band).toBe('niedriges Risiko');
+    expect(d.interpret(2).band).toBe('mittleres Risiko');
+    expect(d.interpret(3).band).toBe('hohes Risiko');
+  });
+});
+
+describe('sPESI', () => {
+  const d = SCORES.spesi;
+  it('min=0 max=6', () => {
+    expect(minOf(d)).toBe(0);
+    expect(maxOf(d)).toBe(6);
+  });
+  it('cutoff at 0', () => {
+    expect(d.interpret(0).band).toBe('niedriges Risiko');
+    expect(d.interpret(1).band).toBe('erhöhtes Risiko');
+  });
+});
+
+describe('HESTIA', () => {
+  const d = SCORES.hestia;
+  it('all-no permits ambulant', () => {
+    expect(d.interpret(0).band).toBe('ambulant möglich');
+  });
+  it('any positive forces stationär', () => {
+    expect(d.interpret(1).band).toBe('stationäre Behandlung');
+  });
+});
+
+describe('SFSR', () => {
+  const d = SCORES.sfsr;
+  it('min=0 max=5', () => {
+    expect(minOf(d)).toBe(0);
+    expect(maxOf(d)).toBe(5);
+  });
+  it('any positive flips band', () => {
+    expect(d.interpret(0).band).toBe('niedriges Risiko');
+    expect(d.interpret(1).band).toBe('erhöhtes Risiko');
+  });
+});
+
+describe('Glasgow-Blatchford', () => {
+  const d = SCORES.gbs;
+  it('low at 0–1, intermediate, high ≥7', () => {
+    expect(d.interpret(0).band).toBe('niedriges Risiko');
+    expect(d.interpret(1).band).toBe('niedriges Risiko');
+    expect(d.interpret(4).band).toBe('mittleres Risiko');
+    expect(d.interpret(7).band).toBe('hohes Risiko');
+  });
+});
+
+describe('NEWS2', () => {
+  const d = SCORES.news2;
+  it('low / medium / high cutoffs', () => {
+    expect(d.interpret(4).band).toBe('low');
+    expect(d.interpret(5).band).toBe('medium');
+    expect(d.interpret(7).band).toBe('high');
+  });
+});
+
 describe('Score registry sanity', () => {
   it('every score has a unique key matching its registry position', () => {
     for (const [regKey, def] of Object.entries(SCORES)) {

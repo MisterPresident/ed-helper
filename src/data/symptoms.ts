@@ -5,7 +5,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'thoraxschmerz',
     label: 'Thoraxschmerz',
     usesOPQRST: true,
-    recommendedScores: ['heart', 'wellsPE', 'geneva', 'perc'],
+    recommendedScores: ['heart', 'wellsPE', 'geneva', 'perc', 'timi', 'edacs', 'news2'],
     redFlagKeys: [
       'rf_thx_acs',
       'rf_thx_lae',
@@ -37,7 +37,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'dyspnoe',
     label: 'Dyspnoe',
     usesOPQRST: false,
-    recommendedScores: ['wellsPE', 'geneva', 'qsofa', 'perc'],
+    recommendedScores: ['wellsPE', 'geneva', 'qsofa', 'perc', 'spesi', 'pesi', 'hestia', 'curb65', 'crb65', 'psi', 'news2', 'ohfrs'],
     redFlagKeys: [
       'rf_dysp_lae',
       'rf_dysp_spannungspneu',
@@ -70,7 +70,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'abdomenschmerz',
     label: 'Abdomenschmerz',
     usesOPQRST: true,
-    recommendedScores: ['qsofa'],
+    recommendedScores: ['qsofa', 'gbs', 'oakland', 'news2'],
     redFlagKeys: [
       'rf_abd_perforation',
       'rf_abd_mesenterial',
@@ -145,7 +145,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'synkope',
     label: 'Synkope',
     usesOPQRST: false,
-    recommendedScores: [],
+    recommendedScores: ['sfsr', 'csrs', 'rose', 'news2'],
     redFlagKeys: [
       'rf_syn_kardiogen',
       'rf_syn_lae',
@@ -384,7 +384,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'sepsis',
     label: 'V.a. Sepsis / Fieber',
     usesOPQRST: false,
-    recommendedScores: ['qsofa'],
+    recommendedScores: ['qsofa', 'news2', 'gaps', 'maps', 'trial'],
     redFlagKeys: [
       'rf_sep_qsofa',
       'rf_sep_laktat',
@@ -421,7 +421,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'bewusstseinsveraenderung',
     label: 'Bewusstseinsveränderung',
     usesOPQRST: false,
-    recommendedScores: ['gcs', 'qsofa'],
+    recommendedScores: ['gcs', 'qsofa', 'news2'],
     redFlagKeys: [
       'rf_bwv_hypoglyk',
       'rf_bwv_intox',
@@ -458,7 +458,7 @@ export const SYMPTOMS: SymptomDef[] = [
     key: 'allgemein',
     label: 'Allgemein / Sonstiges',
     usesOPQRST: true,
-    recommendedScores: ['qsofa', 'gcs'],
+    recommendedScores: ['qsofa', 'gcs', 'news2', 'gaps', 'maps', 'trial'],
     redFlagKeys: [],
     differentials: [],
   },
