@@ -224,14 +224,45 @@ export type BgaValues = {
   creat: string;
 };
 
+export type ChipGroupMode = 'single' | 'multi';
+
+export type ChipGroupNumber = {
+  unit: string;
+  placeholder: string;
+  refLow?: number;
+  refHigh?: number;
+};
+
+export type ChipGroup = {
+  key: string;
+  label: string;
+  mode: ChipGroupMode;
+  /** prefix output with the group label: 'schmal' → 'QRS schmal'. default false */
+  prefixed?: boolean;
+  chips: string[];
+  /** optional inline numeric input next to the chips */
+  number?: ChipGroupNumber;
+};
+
+export type ChipGroupSelection = {
+  chips: string[];
+  number?: string;
+};
+
+/** keyed by ChipGroup.key */
+export type ChipSelection = Record<string, ChipGroupSelection>;
+
 export type Diagnostik = {
   ekg: string;
+  ekgSel: ChipSelection;
   ekgChanges: boolean; // hyperkalemic ECG changes (drives Hyperkaliämie classifier)
   bga: string;
   bgaValues: Partial<BgaValues>;
   labor: string;
   bildgebung: string;
+  bildgebungSel: ChipSelection;
   pocus: string;
+  pocusSel: ChipSelection;
   weitere: string;
 };
 

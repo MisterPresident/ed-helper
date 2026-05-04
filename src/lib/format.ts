@@ -6,7 +6,14 @@ import { RED_FLAGS } from '../data/redFlags';
 import { SCORES } from '../data/scores';
 import { OPQRST_FIELDS } from '../data/opqrst';
 import { STATUS_PALETTES } from '../data/status';
-import { DIAGNOSTIK_SECTIONS, formatBgaInline } from '../data/diagnostik';
+import {
+  BILDGEBUNG_GROUPS,
+  DIAGNOSTIK_SECTIONS,
+  EKG_GROUPS,
+  POCUS_GROUPS,
+  formatBgaInline,
+} from '../data/diagnostik';
+import type { ChipGroup, ChipSelection } from '../types';
 import { ROS_CATEGORIES, ROS_BY_KEY } from '../data/ros';
 import { TREATMENT_SECTIONS } from '../data/treatment';
 import { formatTotal } from './score';
@@ -117,17 +124,88 @@ function buildStatus(enc: Encounter): string | null {
 }
 
 // ───────── Diagnostik ─────────
+/**
+ * Render one ChipGroup's contribution.
+ * Returns null when the group is empty.
+ */
+function renderChipGroup(g: ChipGroup, sel: ChipSelection | undefined): string | null {
+  const s = sel?.[g.key];
+  const chips = s?.chips ?? [];
+  const num = s?.number?.trim();
+  if (chips.length === 0 && !num) return null;
+
+  const numPart = num && g.number ? `${num} ${g.number.unit}`.trim() : '';
+  const chipPart = chips.join(', ');
+
+  if (g.prefixed) {
+    // group label comes first; number after label, chips after that
+    const tail = [numPart, chipPart].filter(Boolean).join(', ');
+    return `${g.label} ${tail}`.trim();
+  }
+  // no prefix — chips already self-explanatory ("SR", "normokard")
+  // include number first so output reads "78/min, normokard"
+  return [numPart, chipPart].filter(Boolean).join(', ');
+}
+
+function renderChipGroupsLine(groups: ChipGroup[], sel: ChipSelection | undefined): string {
+  return groups
+    .map((g) => renderChipGroup(g, sel))
+    .filter((s): s is string => Boolean(s))
+    .join('; ');
+}
+
+/** Bildgebung renders one line per group (so modalities stack visibly). */
+function renderChipGroupsMultiline(
+  groups: ChipGroup[],
+  sel: ChipSelection | undefined
+): string[] {
+  const out: string[] = [];
+  for (const g of groups) {
+    const r = renderChipGroup(g, sel);
+    if (r) out.push(`  · ${r}`);
+  }
+  return out;
+}
+
 function buildDiagnostik(enc: Encounter): string | null {
+  const d = enc.diagnostik;
+  if (!d) return null;
   const lines: string[] = [];
+
   for (const sec of DIAGNOSTIK_SECTIONS) {
     if (sec.key === 'bga') {
-      const inline = formatBgaInline(enc.diagnostik?.bgaValues);
-      const free = enc.diagnostik?.bga?.trim();
+      const inline = formatBgaInline(d.bgaValues);
+      const free = d.bga?.trim();
       const combined = [inline, free].filter(Boolean).join('; ');
       if (combined) lines.push(`- ${sec.label}: ${combined}`);
       continue;
     }
-    const v = enc.diagnostik?.[sec.key]?.trim();
+    if (sec.key === 'ekg') {
+      const struct = renderChipGroupsLine(EKG_GROUPS, d.ekgSel);
+      const free = d.ekg?.trim();
+      const combined = [struct, free].filter(Boolean).join('. ');
+      if (combined) lines.push(`- ${sec.label}: ${combined}`);
+      continue;
+    }
+    if (sec.key === 'bildgebung') {
+      const struct = renderChipGroupsMultiline(BILDGEBUNG_GROUPS, d.bildgebungSel);
+      const free = d.bildgebung?.trim();
+      if (struct.length === 0 && !free) continue;
+      lines.push(`- ${sec.label}:`);
+      for (const r of struct) lines.push(r);
+      if (free) lines.push(`  ${free}`);
+      continue;
+    }
+    if (sec.key === 'pocus') {
+      const struct = renderChipGroupsMultiline(POCUS_GROUPS, d.pocusSel);
+      const free = d.pocus?.trim();
+      if (struct.length === 0 && !free) continue;
+      lines.push(`- ${sec.label}:`);
+      for (const r of struct) lines.push(r);
+      if (free) lines.push(`  ${free}`);
+      continue;
+    }
+    const v = d[sec.key]?.trim();
     if (v) lines.push(`- ${sec.label}: ${v}`);
   }
   return lines.length ? lines.join('\n') : null;

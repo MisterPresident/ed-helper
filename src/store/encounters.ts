@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type {
   ActiveDiagnosis,
   BgaValues,
+  ChipSelection,
   DiagnosisKey,
   DifferentialState,
   Diagnostik,
@@ -57,6 +58,13 @@ type Actions = {
   ) => void;
   patchDiagnostik: (id: EncounterId, patch: Partial<Diagnostik>) => void;
   setBgaValue: (id: EncounterId, key: keyof BgaValues, value: string) => void;
+  setChipGroup: (
+    id: EncounterId,
+    section: 'ekgSel' | 'bildgebungSel' | 'pocusSel',
+    groupKey: string,
+    chips: string[],
+    number?: string,
+  ) => void;
   patchTreatment: (id: EncounterId, patch: Partial<Treatment>) => void;
   setDischarge: (id: EncounterId, key: string, checked: boolean) => void;
   setProzedere: (id: EncounterId, text: string) => void;
@@ -252,6 +260,24 @@ export const useEncounters = create<State & Actions>()(
           }))
         ),
 
+      setChipGroup: (id, section, groupKey, chips, number) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => {
+            const existing: ChipSelection = e.diagnostik?.[section] ?? {};
+            const isEmpty = chips.length === 0 && (number === undefined || !number.trim());
+            const next: ChipSelection = { ...existing };
+            if (isEmpty) {
+              delete next[groupKey];
+            } else {
+              next[groupKey] = { chips, number };
+            }
+            return {
+              ...e,
+              diagnostik: { ...(e.diagnostik ?? {}), [section]: next },
+            };
+          })
+        ),
+
       patchTreatment: (id, patch) =>
         set((s) =>
           patchEncounter(s, id, (e) => ({
@@ -279,7 +305,7 @@ export const useEncounters = create<State & Actions>()(
     }),
     {
       name: 'er-helper:encounters:v1',
-      version: 4,
+      version: 5,
     }
   )
 );

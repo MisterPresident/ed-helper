@@ -262,6 +262,72 @@ describe('buildSummary — Prozedere', () => {
   });
 });
 
+describe('buildSummary — structured EKG groups', () => {
+  it('renders Frequenz with number + chip without group prefix', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        ekgSel: {
+          rate: { chips: ['Tachykardie'], number: '120' },
+        },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- EKG:');
+    expect(s).toContain('120 /min, Tachykardie');
+  });
+
+  it('emits group prefix for QRS multi-select with number', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        ekgSel: {
+          qrs: { chips: ['schmal', 'RSB'], number: '92' },
+        },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('QRS 92 ms, schmal, RSB');
+  });
+
+  it('renders just the number when no chip is set', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        ekgSel: { pq: { chips: [], number: '160' } },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('PQ 160 ms');
+  });
+
+  it('appends EKG free text after the structured composition', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        ekgSel: { rhythmus: { chips: ['SR'] } },
+        ekg: 'V.a. Lateralinfarkt',
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('SR');
+    expect(s).toContain('V.a. Lateralinfarkt');
+  });
+});
+
+describe('buildSummary — Bildgebung with modality prefix', () => {
+  it('groups modalities on separate lines with prefix', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        bildgebungSel: {
+          roentgen: { chips: ['Rö-Thorax'] },
+          ct: { chips: ['CT Abdomen'] },
+        },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- Bildgebung:');
+    expect(s).toContain('Röntgen Rö-Thorax');
+    expect(s).toContain('CT CT Abdomen');
+  });
+});
+
 describe('buildSummary — section omission', () => {
   it('skips sections that have no content', () => {
     const enc = baseEnc({

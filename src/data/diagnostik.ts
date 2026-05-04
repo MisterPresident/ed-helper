@@ -1,6 +1,6 @@
-import type { BgaValues } from '../types';
+import type { BgaValues, ChipGroup } from '../types';
 
-// ───────── Free-text section meta (used by format.ts to render "- Label: text") ─────────
+// ───────── Section meta (free-text) ─────────
 export type DiagnostikSection = {
   key: 'ekg' | 'bga' | 'labor' | 'bildgebung' | 'pocus' | 'weitere';
   label: string;
@@ -11,7 +11,7 @@ export const DIAGNOSTIK_SECTIONS: DiagnostikSection[] = [
   {
     key: 'ekg',
     label: 'EKG',
-    placeholder: 'SR, 78/min, PQ 160, QRS 90, QT normal, keine ST-Dynamik',
+    placeholder: 'Narrative / Lokalisation z.B. "ST-Hebung in I/aVL, V5/V6"',
   },
   {
     key: 'bga',
@@ -21,17 +21,17 @@ export const DIAGNOSTIK_SECTIONS: DiagnostikSection[] = [
   {
     key: 'labor',
     label: 'Labor',
-    placeholder: 'Troponin hs, CRP, BB, Elyte, Kreatinin, Gerinnung, Lipase, D-Dimer …',
+    placeholder: 'Troponin hs < 6, CRP 3, Lipase 28 …',
   },
   {
     key: 'bildgebung',
     label: 'Bildgebung',
-    placeholder: 'Rö-Thorax, Sono Abdomen, CT-Angio Aorta, CCT, MRT …',
+    placeholder: 'Befund-Narrative z.B. "Rö-Thorax: keine Infiltrate, kein Pneu"',
   },
   {
     key: 'pocus',
     label: 'POCUS',
-    placeholder: 'Echo, Lunge, FAST, Abdomen …',
+    placeholder: 'Echo: normale LV-Funktion, kein Perikarderguss …',
   },
   {
     key: 'weitere',
@@ -40,24 +40,200 @@ export const DIAGNOSTIK_SECTIONS: DiagnostikSection[] = [
   },
 ];
 
-// ───────── Grouped chip palettes (UI helpers; clicking appends to the section's free-text) ─────────
-export type ChipGroup = { label: string; chips: string[] };
-
+// ───────── EKG groups (structured) ─────────
 export const EKG_GROUPS: ChipGroup[] = [
-  { label: 'Frequenz', chips: ['normokard', 'Tachykardie', 'Bradykardie', '/min'] },
-  { label: 'Rhythmus', chips: ['rhythmisch', 'arrhythmisch', 'SR', 'VHF', 'Vorhofflattern', 'AV-junktional'] },
-  { label: 'Achse', chips: ['Indifferenztyp', 'Linkstyp', 'Rechtstyp', 'überdrehter Linkstyp', 'überdrehter Rechtstyp'] },
-  { label: 'P-Welle', chips: ['regelrecht', 'P pulmonale', 'P mitrale', 'fehlende P'] },
-  { label: 'PQ-Zeit', chips: ['normal', 'AV-Block I°', 'AV-Block II° Mobitz I', 'AV-Block II° Mobitz II', 'AV-Block III°', 'kurz (WPW)'] },
-  { label: 'Q-Welle', chips: ['keine pathol. Q', 'pathol. Q anterior', 'pathol. Q inferior', 'pathol. Q lateral'] },
-  { label: 'QRS', chips: ['schmal', 'breit', 'RSB', 'LSB', 'LAHB', 'LPHB'] },
-  { label: 'S-Zacke', chips: ['regelrecht', 'tiefe S in V5/V6', 'persistierende S V5–V6'] },
-  { label: 'ST-Strecke', chips: ['isoelektrisch', 'ST-Hebung', 'ST-Senkung', 'J-Punkt-Hebung'] },
-  { label: 'T-Welle', chips: ['positiv', 'T-Negativierung', 'hohe spitze T', 'biphasisch'] },
-  { label: 'QTc', chips: ['normal', 'verlängert', 'kurz', 'ms'] },
+  {
+    key: 'rate',
+    label: 'Frequenz',
+    mode: 'single',
+    prefixed: false,
+    chips: ['normokard', 'Tachykardie', 'Bradykardie'],
+    number: { unit: '/min', placeholder: '78', refLow: 50, refHigh: 100 },
+  },
+  {
+    key: 'rhythmus',
+    label: 'Rhythmus',
+    mode: 'single',
+    prefixed: false,
+    chips: ['SR', 'arrhythmisch absolut', 'VHF', 'Vorhofflattern', 'AV-junktional'],
+  },
+  {
+    key: 'axis',
+    label: 'Achse',
+    mode: 'single',
+    prefixed: true,
+    chips: [
+      'Indifferenztyp',
+      'Linkstyp',
+      'überdrehter Linkstyp',
+      'Rechtstyp',
+      'überdrehter Rechtstyp',
+    ],
+  },
+  {
+    key: 'p',
+    label: 'P-Welle',
+    mode: 'single',
+    prefixed: true,
+    chips: ['regelrecht', 'P pulmonale', 'P mitrale', 'fehlend'],
+  },
+  {
+    key: 'pq',
+    label: 'PQ',
+    mode: 'single',
+    prefixed: true,
+    chips: ['normal', 'AV-Block I°', 'II° Mobitz I', 'II° Mobitz II', 'III°', 'kurz (WPW)'],
+    number: { unit: 'ms', placeholder: '160', refLow: 120, refHigh: 200 },
+  },
+  {
+    key: 'q',
+    label: 'Q-Welle',
+    mode: 'multi',
+    prefixed: true,
+    chips: [
+      'keine pathol. Q',
+      'pathol. Q anterior',
+      'pathol. Q inferior',
+      'pathol. Q lateral',
+    ],
+  },
+  {
+    key: 'qrs',
+    label: 'QRS',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['schmal', 'breit', 'RSB', 'LSB', 'LAHB', 'LPHB'],
+    number: { unit: 'ms', placeholder: '90', refLow: 70, refHigh: 110 },
+  },
+  {
+    key: 's',
+    label: 'S-Zacke',
+    mode: 'single',
+    prefixed: true,
+    chips: ['regelrecht', 'tiefe S in V5/V6', 'persistierende S V5–V6'],
+  },
+  {
+    key: 'st',
+    label: 'ST',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['isoelektrisch', 'ST-Hebung', 'ST-Senkung', 'J-Punkt-Hebung'],
+  },
+  {
+    key: 't',
+    label: 'T-Welle',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['positiv', 'T-Negativierung', 'hohe spitze T', 'biphasisch'],
+  },
+  {
+    key: 'qtc',
+    label: 'QTc',
+    mode: 'single',
+    prefixed: true,
+    chips: ['normal', 'verlängert', 'kurz'],
+    number: { unit: 'ms', placeholder: '420', refLow: 350, refHigh: 470 },
+  },
 ];
 
-export const LABOR_GROUPS: ChipGroup[] = [
+// ───────── Bildgebung (multi, prefixed by modality) ─────────
+export const BILDGEBUNG_GROUPS: ChipGroup[] = [
+  {
+    key: 'roentgen',
+    label: 'Röntgen',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['Rö-Thorax', 'Rö-Abdomen', 'Rö-HWS', 'Rö-BWS', 'Rö-LWS', 'Rö-Becken', 'Rö-Extremität'],
+  },
+  {
+    key: 'sono',
+    label: 'Sonographie',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['Sono Abdomen', 'FAST', 'Echo TTE', 'Echo TEE', 'KUS', 'Doppler venös', 'Doppler arteriell'],
+  },
+  {
+    key: 'ct',
+    label: 'CT',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['CCT nativ', 'CCT mit KM', 'CT-Angio Thorax (LAE)', 'CT-Angio Aorta', 'CT Abdomen', 'Polytrauma-CT'],
+  },
+  {
+    key: 'mrt',
+    label: 'MRT',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['MRT Schädel', 'MRT HWS', 'MRT LWS', 'MRT Knie', 'MRT Hüfte'],
+  },
+  {
+    key: 'andere',
+    label: 'Andere',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['Endoskopie', 'Bronchoskopie', 'Angiographie'],
+  },
+];
+
+// ───────── POCUS (multi, prefixed by region) ─────────
+export const POCUS_GROUPS: ChipGroup[] = [
+  {
+    key: 'lunge',
+    label: 'Lunge',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['B-Lines', 'Lung sliding +', 'Lung sliding -', 'Pleuraerguss', 'Konsolidierung'],
+  },
+  {
+    key: 'cor',
+    label: 'Cor',
+    mode: 'multi',
+    prefixed: true,
+    chips: [
+      'Perikarderguss',
+      'reduzierte LVEF',
+      'normale LV-Funktion',
+      'RV-Belastung',
+      'D-Sign',
+      'IVC kollabiert',
+      'IVC plethorisch',
+    ],
+  },
+  {
+    key: 'abdomen',
+    label: 'Abdomen',
+    mode: 'multi',
+    prefixed: true,
+    chips: [
+      'Leber o.B.',
+      'freie Flüssigkeit',
+      'Aorta < 3 cm',
+      'AAA',
+      'Hydronephrose',
+      'Gallenblase Steine',
+      'Gallenblasenwand verdickt',
+    ],
+  },
+  {
+    key: 'fast',
+    label: 'FAST',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['Morrison neg', 'Splenorenal neg', 'Douglas neg', 'Perikard neg', 'positiv'],
+  },
+  {
+    key: 'msk',
+    label: 'MSK / Sonstiges',
+    mode: 'multi',
+    prefixed: true,
+    chips: ['Kompressions-Sono Bein', 'TVT-Sono', 'Pneumothorax-Sono'],
+  },
+];
+
+// ───────── Labor (still flat; per-analyte structuring is out of scope) ─────────
+export type LegacyChipGroup = { label: string; chips: string[] };
+
+export const LABOR_GROUPS: LegacyChipGroup[] = [
   {
     label: 'Blocks',
     chips: ['NFA-Basis', 'NFA-Abdomen', 'IN1-Labor', 'IN2-Labor', 'IN3-Labor', 'IN4-Labor', 'CH2-Labor', 'Neuro-Labor'],
@@ -86,22 +262,6 @@ export const LABOR_GROUPS: ChipGroup[] = [
   },
 ];
 
-export const BILDGEBUNG_GROUPS: ChipGroup[] = [
-  { label: 'Röntgen', chips: ['Rö-Thorax', 'Rö-Abdomen', 'Rö-HWS', 'Rö-BWS', 'Rö-LWS', 'Rö-Becken', 'Rö-Extremität'] },
-  { label: 'Sonographie', chips: ['Sono Abdomen', 'FAST', 'Echo TTE', 'Echo TEE', 'KUS', 'Doppler venös', 'Doppler arteriell'] },
-  { label: 'CT', chips: ['CCT nativ', 'CCT mit KM', 'CT-Angio Thorax (LAE)', 'CT-Angio Aorta', 'CT Abdomen', 'Polytrauma-CT'] },
-  { label: 'MRT', chips: ['MRT Schädel', 'MRT HWS', 'MRT LWS', 'MRT Knie', 'MRT Hüfte'] },
-  { label: 'Andere', chips: ['Endoskopie', 'Bronchoskopie', 'Angiographie'] },
-];
-
-export const POCUS_GROUPS: ChipGroup[] = [
-  { label: 'Lunge', chips: ['B-Lines', 'Lung sliding +', 'Lung sliding -', 'Pleuraerguss', 'Konsolidierung'] },
-  { label: 'Cor', chips: ['Perikarderguss', 'reduzierte LVEF', 'normale LV-Funktion', 'RV-Belastung', 'D-Sign', 'IVC kollabiert', 'IVC plethorisch'] },
-  { label: 'Abdomen', chips: ['Leber o.B.', 'freie Flüssigkeit', 'Aorta < 3 cm', 'AAA', 'Hydronephrose', 'Gallenblase Steine', 'Gallenblasenwand verdickt'] },
-  { label: 'FAST', chips: ['Morrison neg', 'Splenorenal neg', 'Douglas neg', 'Perikard neg', 'positiv'] },
-  { label: 'MSK / Sonstiges', chips: ['Kompressions-Sono Bein', 'TVT-Sono', 'Pneumothorax-Sono'] },
-];
-
 export const WEITERE_CHIPS: string[] = [
   'Liquorpunktion',
   'Mikrobiologie',
@@ -114,7 +274,7 @@ export const WEITERE_CHIPS: string[] = [
   'Kardiologisches Konsil',
 ];
 
-// ───────── BGA structured fields ─────────
+// ───────── BGA structured fields (unchanged) ─────────
 export type BgaFieldDef = {
   key: keyof BgaValues;
   label: string;
