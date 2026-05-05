@@ -10,7 +10,9 @@ import {
   BILDGEBUNG_GROUPS,
   DIAGNOSTIK_SECTIONS,
   EKG_GROUPS,
+  LABOR_GROUPS,
   POCUS_GROUPS,
+  WEITERE_GROUPS,
   formatBgaInline,
 } from '../data/diagnostik';
 import type { ChipGroup, ChipSelection } from '../types';
@@ -45,15 +47,15 @@ function buildAnamnese(enc: Encounter): string {
     const opq: string[] = [];
     for (const f of OPQRST_FIELDS) {
       const v = enc.opqrst?.[f.key]?.trim();
-      if (v) opq.push(v);
+      if (v) opq.push(`${f.mnemonic}: ${v}`);
     }
     lines.push(`Leitsymptom: ${sym.label}${opq.length ? ` (${opq.join(', ')})` : ''}.`);
   }
   const sampler = enc.sampler;
-  if (sampler?.symptoms?.trim()) lines.push(sampler.symptoms.trim());
-  if (sampler?.event?.trim()) lines.push(`Ereignis: ${sampler.event.trim()}.`);
-  if (sampler?.risiko?.trim()) lines.push(`Risikofaktoren: ${sampler.risiko.trim()}.`);
-  if (sampler?.lastMeal?.trim()) lines.push(`Letzte Mahlzeit: ${sampler.lastMeal.trim()}.`);
+  if (sampler?.symptoms?.trim()) lines.push(`S: ${sampler.symptoms.trim()}.`);
+  if (sampler?.event?.trim()) lines.push(`E: ${sampler.event.trim()}.`);
+  if (sampler?.risiko?.trim()) lines.push(`R: ${sampler.risiko.trim()}.`);
+  if (sampler?.lastMeal?.trim()) lines.push(`L: ${sampler.lastMeal.trim()}.`);
 
   return lines.join(' ');
 }
@@ -80,20 +82,23 @@ function buildHypothesen(enc: Encounter): string | null {
   if (dxs.length === 0) return null;
   const lines: string[] = [];
   for (const dx of dxs) {
-    const def = DIAGNOSES_BY_KEY[dx.key];
-    if (!def) continue;
+    const isFreeText = !!dx.freeText;
+    const def = isFreeText ? null : DIAGNOSES_BY_KEY[dx.key];
+    if (!isFreeText && !def) continue;
+    const label = dx.freeText ?? def!.label;
     const statusLabel =
       dx.status === 'confirmed'
         ? 'bestätigt'
         : dx.status === 'excluded'
           ? 'ausgeschlossen'
           : 'V.a.';
-    const sev = def.severityClassifier?.(enc) ?? null;
+    const sev = def?.severityClassifier?.(enc) ?? null;
     const sevPart = sev
       ? ` (${sev.stage}${sev.basedOn.length ? ' — ' + sev.basedOn.join(', ') : ''})`
       : '';
+    const tagPart = isFreeText ? ' (Freitext)' : '';
     const note = dx.note?.trim() ? ` — ${dx.note.trim()}` : '';
-    lines.push(`- ${def.label}: ${statusLabel}${sevPart}${note}`);
+    lines.push(`- ${label}${tagPart}: ${statusLabel}${sevPart}${note}`);
   }
   return lines.join('\n');
 }
@@ -167,6 +172,17 @@ function renderChipGroupsMultiline(
   return out;
 }
 
+/** Labor renders as a single plus-joined line in fixed group order. */
+function renderLaborPlusJoined(sel: ChipSelection | undefined): string {
+  if (!sel) return '';
+  const parts: string[] = [];
+  for (const g of LABOR_GROUPS) {
+    const chips = sel[g.key]?.chips ?? [];
+    for (const c of chips) parts.push(c);
+  }
+  return parts.join(' + ');
+}
+
 function buildDiagnostik(enc: Encounter): string | null {
   const d = enc.diagnostik;
   if (!d) return null;
@@ -184,6 +200,13 @@ function buildDiagnostik(enc: Encounter): string | null {
       const struct = renderChipGroupsLine(EKG_GROUPS, d.ekgSel);
       const free = d.ekg?.trim();
       const combined = [struct, free].filter(Boolean).join('. ');
+      if (combined) lines.push(`- ${sec.label}: ${combined}`);
+      continue;
+    }
+    if (sec.key === 'labor') {
+      const plus = renderLaborPlusJoined(d.laborSel);
+      const free = d.labor?.trim();
+      const combined = [plus, free].filter(Boolean).join(' · ');
       if (combined) lines.push(`- ${sec.label}: ${combined}`);
       continue;
     }
@@ -205,8 +228,15 @@ function buildDiagnostik(enc: Encounter): string | null {
       if (free) lines.push(`  ${free}`);
       continue;
     }
-    const v = d[sec.key]?.trim();
-    if (v) lines.push(`- ${sec.label}: ${v}`);
+    if (sec.key === 'weitere') {
+      const struct = renderChipGroupsMultiline(WEITERE_GROUPS, d.weitereSel);
+      const free = d.weitere?.trim();
+      if (struct.length === 0 && !free) continue;
+      lines.push(`- ${sec.label}:`);
+      for (const r of struct) lines.push(r);
+      if (free) lines.push(`  ${free}`);
+      continue;
+    }
   }
   return lines.length ? lines.join('\n') : null;
 }
@@ -235,8 +265,15 @@ void ROS_BY_KEY;
 function buildTreatment(enc: Encounter): string | null {
   const lines: string[] = [];
   for (const sec of TREATMENT_SECTIONS) {
-    const v = enc.treatment?.[sec.key]?.trim();
-    if (v) lines.push(`- ${sec.label}: ${v}`);
+    const counts = enc.treatmentCounts?.[sec.key] ?? {};
+    const countParts: string[] = [];
+    for (const c of sec.chips) {
+      const n = counts[c];
+      if (n && n > 0) countParts.push(n === 1 ? `${c} ×1` : `${c} ×${n}`);
+    }
+    const free = enc.treatment?.[sec.key]?.trim();
+    const combined = [countParts.join('; '), free].filter(Boolean).join(' · ');
+    if (combined) lines.push(`- ${sec.label}: ${combined}`);
   }
   return lines.length ? lines.join('\n') : null;
 }
@@ -366,13 +403,13 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
   if (ros) sections.push({ title: 'Anamnese (ROS)', body: ros });
 
   if (sampler?.allergien?.trim())
-    sections.push({ title: 'Allergien', body: sampler.allergien.trim() });
+    sections.push({ title: 'A – Allergien', body: sampler.allergien.trim() });
   if (sampler?.medikation?.trim())
-    sections.push({ title: 'Dauermedikation', body: sampler.medikation.trim() });
+    sections.push({ title: 'M – Dauermedikation', body: sampler.medikation.trim() });
   if (sampler?.vorerkrankungen?.trim())
-    sections.push({ title: 'Vordiagnosen', body: sampler.vorerkrankungen.trim() });
+    sections.push({ title: 'P – Vordiagnosen', body: sampler.vorerkrankungen.trim() });
   if (sampler?.voroperationen?.trim())
-    sections.push({ title: 'Voroperationen', body: sampler.voroperationen.trim() });
+    sections.push({ title: 'P – Voroperationen', body: sampler.voroperationen.trim() });
 
   const status = buildStatus(enc);
   if (status) sections.push({ title: 'Status', body: status });

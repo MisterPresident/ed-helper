@@ -37,9 +37,11 @@ function severityBadgeClass(tier: 'mild' | 'moderate' | 'severe' | 'critical'): 
 function DxPill({ enc, dx }: { enc: Encounter; dx: ActiveDiagnosis }) {
   const setStatus = useEncounters((s) => s.setDiagnosisStatus);
   const remove = useEncounters((s) => s.removeDiagnosis);
-  const def = DIAGNOSES_BY_KEY[dx.key];
-  if (!def) return null;
-  const sev = def.severityClassifier?.(enc) ?? null;
+  const isFreeText = !!dx.freeText;
+  const def = isFreeText ? null : DIAGNOSES_BY_KEY[dx.key];
+  if (!isFreeText && !def) return null;
+  const sev = def?.severityClassifier?.(enc) ?? null;
+  const labelText = dx.freeText ?? def?.label ?? dx.key;
 
   return (
     <div className={`rounded-md border px-2 py-1.5 text-xs ${styles[dx.status]}`}>
@@ -50,7 +52,8 @@ function DxPill({ enc, dx }: { enc: Encounter; dx: ActiveDiagnosis }) {
             onClick={() => setStatus(enc.id, dx.key, cycle[dx.status])}
             title="Status wechseln"
           >
-            {def.label}
+            {labelText}
+            {isFreeText && <span className="ml-1 text-[10px] opacity-60">(Freitext)</span>}
           </button>
           <div className="mt-0.5 flex flex-wrap items-center gap-1">
             <span className="text-[10px] uppercase tracking-wide font-semibold opacity-80">
@@ -82,7 +85,9 @@ function DxPill({ enc, dx }: { enc: Encounter; dx: ActiveDiagnosis }) {
 
 function DiagnosisPicker({ enc, onClose }: { enc: Encounter; onClose: () => void }) {
   const [query, setQuery] = useState('');
+  const [freeText, setFreeText] = useState('');
   const add = useEncounters((s) => s.addDiagnosis);
+  const addFree = useEncounters((s) => s.addFreeDiagnosis);
   const existing = new Set((enc.diagnoses ?? []).map((d) => d.key));
 
   const filtered = useMemo(() => {
@@ -92,12 +97,19 @@ function DiagnosisPicker({ enc, onClose }: { enc: Encounter; onClose: () => void
     );
   }, [query, existing]);
 
+  const submitFreeText = () => {
+    const t = freeText.trim();
+    if (!t) return;
+    addFree(enc.id, t, 'suspected');
+    onClose();
+  };
+
   return (
     <div className="rounded-md border border-slate-300 bg-white p-2">
       <input
         autoFocus
         className="w-full rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-slate-900"
-        placeholder="Diagnose suchen …"
+        placeholder="Katalog-Diagnose suchen …"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -118,7 +130,30 @@ function DiagnosisPicker({ enc, onClose }: { enc: Encounter; onClose: () => void
           </button>
         ))}
       </div>
-      <div className="mt-1 flex justify-end">
+      <div className="mt-2 pt-2 border-t border-slate-200">
+        <div className="text-[10px] uppercase tracking-wide text-slate-500 mb-1">
+          Freitext-Diagnose
+        </div>
+        <div className="flex gap-1">
+          <input
+            className="flex-1 rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-slate-900"
+            placeholder="z.B. Akute Bronchitis"
+            value={freeText}
+            onChange={(e) => setFreeText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') submitFreeText();
+            }}
+          />
+          <button
+            className="btn-primary text-xs px-2"
+            onClick={submitFreeText}
+            disabled={!freeText.trim()}
+          >
+            Hinzufügen
+          </button>
+        </div>
+      </div>
+      <div className="mt-2 flex justify-end">
         <button className="text-xs text-slate-500 hover:text-slate-800" onClick={onClose}>
           Schließen
         </button>

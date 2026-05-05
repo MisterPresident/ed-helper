@@ -20,6 +20,7 @@ import type {
   StatusSystemKey,
   SymptomKey,
   Treatment,
+  TreatmentCounts,
   Vitals,
   WorkflowStep,
 } from '../types';
@@ -40,6 +41,7 @@ type Actions = {
   patchOpqrst: (id: EncounterId, patch: Partial<OPQRST>) => void;
   setVital: (id: EncounterId, key: keyof Vitals, value: string) => void;
   addDiagnosis: (id: EncounterId, key: DiagnosisKey, status?: DxStatus) => void;
+  addFreeDiagnosis: (id: EncounterId, text: string, status?: DxStatus) => void;
   setDiagnosisStatus: (id: EncounterId, key: DiagnosisKey, status: DxStatus) => void;
   setDiagnosisNote: (id: EncounterId, key: DiagnosisKey, note: string) => void;
   removeDiagnosis: (id: EncounterId, key: DiagnosisKey) => void;
@@ -60,12 +62,18 @@ type Actions = {
   setBgaValue: (id: EncounterId, key: keyof BgaValues, value: string) => void;
   setChipGroup: (
     id: EncounterId,
-    section: 'ekgSel' | 'bildgebungSel' | 'pocusSel',
+    section: 'ekgSel' | 'bildgebungSel' | 'pocusSel' | 'laborSel' | 'weitereSel',
     groupKey: string,
     chips: string[],
     number?: string,
   ) => void;
   patchTreatment: (id: EncounterId, patch: Partial<Treatment>) => void;
+  setTreatmentCount: (
+    id: EncounterId,
+    section: keyof Treatment,
+    chipLabel: string,
+    count: number,
+  ) => void;
   setDischarge: (id: EncounterId, key: string, checked: boolean) => void;
   setProzedere: (id: EncounterId, text: string) => void;
   setProzedereChips: (id: EncounterId, chips: string[]) => void;
@@ -146,6 +154,22 @@ export const useEncounters = create<State & Actions>()(
             const existing = e.diagnoses ?? [];
             if (existing.some((d) => d.key === key)) return e;
             const dx: ActiveDiagnosis = { key, status, addedAt: Date.now() };
+            return { ...e, diagnoses: [...existing, dx] };
+          })
+        ),
+
+      addFreeDiagnosis: (id, text, status = 'suspected') =>
+        set((s) =>
+          patchEncounter(s, id, (e) => {
+            const trimmed = text.trim();
+            if (!trimmed) return e;
+            const existing = e.diagnoses ?? [];
+            const dx: ActiveDiagnosis = {
+              key: `free:${newId()}`,
+              status,
+              addedAt: Date.now(),
+              freeText: trimmed,
+            };
             return { ...e, diagnoses: [...existing, dx] };
           })
         ),
@@ -286,6 +310,27 @@ export const useEncounters = create<State & Actions>()(
           }))
         ),
 
+      setTreatmentCount: (id, section, chipLabel, count) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => {
+            const counts: TreatmentCounts = e.treatmentCounts ?? {};
+            const sectionCounts = { ...(counts[section] ?? {}) };
+            const next = Math.max(0, count | 0);
+            if (next === 0) {
+              delete sectionCounts[chipLabel];
+            } else {
+              sectionCounts[chipLabel] = next;
+            }
+            const nextCounts: TreatmentCounts = { ...counts };
+            if (Object.keys(sectionCounts).length === 0) {
+              delete nextCounts[section];
+            } else {
+              nextCounts[section] = sectionCounts;
+            }
+            return { ...e, treatmentCounts: nextCounts };
+          })
+        ),
+
       setDischarge: (id, key, checked) =>
         set((s) =>
           patchEncounter(s, id, (e) => ({
@@ -305,7 +350,7 @@ export const useEncounters = create<State & Actions>()(
     }),
     {
       name: 'er-helper:encounters:v1',
-      version: 5,
+      version: 6,
     }
   )
 );

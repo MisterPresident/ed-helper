@@ -230,16 +230,30 @@ export const POCUS_GROUPS: ChipGroup[] = [
   },
 ];
 
-// ───────── Labor (still flat; per-analyte structuring is out of scope) ─────────
-export type LegacyChipGroup = { label: string; chips: string[] };
-
-export const LABOR_GROUPS: LegacyChipGroup[] = [
+// ───────── Labor (multi, NOT prefixed in output — output joins with " + ") ─────────
+// Order in this array also defines the output sort order (Blocks → Werte → Infekt).
+export const LABOR_GROUPS: ChipGroup[] = [
   {
+    key: 'blocks',
     label: 'Blocks',
-    chips: ['NFA-Basis', 'NFA-Abdomen', 'IN1-Labor', 'IN2-Labor', 'IN3-Labor', 'IN4-Labor', 'CH2-Labor', 'Neuro-Labor'],
+    mode: 'multi',
+    prefixed: false,
+    chips: [
+      'NFA-Basis',
+      'NFA-Abdomen',
+      'IN1-Labor',
+      'IN2-Labor',
+      'IN3-Labor',
+      'IN4-Labor',
+      'CH2-Labor',
+      'Neuro-Labor',
+    ],
   },
   {
+    key: 'werte',
     label: 'Werte',
+    mode: 'multi',
+    prefixed: false,
     chips: [
       'Troponin hs',
       'CK / CK-MB',
@@ -257,21 +271,41 @@ export const LABOR_GROUPS: LegacyChipGroup[] = [
     ],
   },
   {
+    key: 'infekt',
     label: 'Infekt',
+    mode: 'multi',
+    prefixed: false,
     chips: ['CRP', 'PCT', 'Blutkulturen', 'Urin-Stix', 'Urinsediment', 'Diff-BB'],
   },
 ];
 
-export const WEITERE_CHIPS: string[] = [
-  'Liquorpunktion',
-  'Mikrobiologie',
-  'Urin-Toxikologie',
-  'Schwangerschaftstest',
-  'Augen-Konsil',
-  'HNO-Konsil',
-  'Chirurgisches Konsil',
-  'Neurologisches Konsil',
-  'Kardiologisches Konsil',
+// ───────── Weitere Diagnostik (multi, prefixed) ─────────
+export const WEITERE_GROUPS: ChipGroup[] = [
+  {
+    key: 'konsile',
+    label: 'Konsile',
+    mode: 'multi',
+    prefixed: true,
+    chips: [
+      'Augen-Konsil',
+      'HNO-Konsil',
+      'Chirurgisches Konsil',
+      'Neurologisches Konsil',
+      'Kardiologisches Konsil',
+    ],
+  },
+  {
+    key: 'sonstiges',
+    label: 'Sonstiges',
+    mode: 'multi',
+    prefixed: true,
+    chips: [
+      'Liquorpunktion',
+      'Mikrobiologie',
+      'Urin-Toxikologie',
+      'Schwangerschaftstest',
+    ],
+  },
 ];
 
 // ───────── BGA structured fields (unchanged) ─────────

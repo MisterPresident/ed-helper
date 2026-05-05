@@ -10,13 +10,13 @@ import {
   EKG_GROUPS,
   LABOR_GROUPS,
   POCUS_GROUPS,
-  WEITERE_CHIPS,
+  WEITERE_GROUPS,
   isBgaAbnormal,
 } from '../../data/diagnostik';
 import { useEncounters } from '../../store/encounters';
 import { ChipGroupEditor } from '../ChipGroupEditor';
 
-type SectionKey = 'ekgSel' | 'bildgebungSel' | 'pocusSel';
+type SectionKey = 'ekgSel' | 'bildgebungSel' | 'pocusSel' | 'laborSel' | 'weitereSel';
 
 function ChipGroupsEditor({
   enc,
@@ -30,7 +30,7 @@ function ChipGroupsEditor({
   groups: ChipGroup[];
   section: SectionKey;
   label: string;
-  freeFieldKey: 'ekg' | 'bildgebung' | 'pocus';
+  freeFieldKey: 'ekg' | 'bildgebung' | 'pocus' | 'labor' | 'weitere';
   freePlaceholder: string;
 }) {
   const setChipGroup = useEncounters((s) => s.setChipGroup);
@@ -59,91 +59,6 @@ function ChipGroupsEditor({
         placeholder={freePlaceholder}
         value={free}
         onChange={(e) => patch(enc.id, { [freeFieldKey]: e.target.value })}
-      />
-    </div>
-  );
-}
-
-function FlatChipsEditor({
-  enc,
-  chips,
-  label,
-  fieldKey,
-  placeholder,
-}: {
-  enc: Encounter;
-  chips: string[];
-  label: string;
-  fieldKey: 'labor' | 'weitere';
-  placeholder: string;
-}) {
-  const patch = useEncounters((s) => s.patchDiagnostik);
-  const value = (enc.diagnostik?.[fieldKey] as string | undefined) ?? '';
-  const append = (chip: string) => {
-    const cur = value.trim();
-    const next = cur ? `${cur}, ${chip}` : chip;
-    patch(enc.id, { [fieldKey]: next });
-  };
-  return (
-    <div className="card">
-      <h4 className="font-semibold mb-2">{label}</h4>
-      <div className="flex flex-wrap gap-1.5 mb-2">
-        {chips.map((c) => (
-          <button
-            key={c}
-            className="chip border-slate-300 hover:bg-slate-100"
-            onClick={() => append(c)}
-          >
-            + {c}
-          </button>
-        ))}
-      </div>
-      <textarea
-        rows={2}
-        className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-900"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => patch(enc.id, { [fieldKey]: e.target.value })}
-      />
-    </div>
-  );
-}
-
-function LaborEditor({ enc }: { enc: Encounter }) {
-  const patch = useEncounters((s) => s.patchDiagnostik);
-  const value = enc.diagnostik?.labor ?? '';
-  const append = (chip: string) => {
-    const cur = value.trim();
-    const next = cur ? `${cur}, ${chip}` : chip;
-    patch(enc.id, { labor: next });
-  };
-  return (
-    <div className="card">
-      <h4 className="font-semibold mb-2">Labor</h4>
-      <div className="space-y-2 mb-2">
-        {LABOR_GROUPS.map((g) => (
-          <div key={g.label}>
-            <div className="text-xs text-slate-500 mb-1">{g.label}</div>
-            <div className="flex flex-wrap gap-1.5">
-              {g.chips.map((c) => (
-                <button
-                  key={c}
-                  className="chip border-slate-300 hover:bg-slate-100"
-                  onClick={() => append(c)}
-                >
-                  + {c}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <textarea
-        rows={2}
-        className="w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-900"
-        placeholder="Troponin hs < 6, CRP 3, Lipase 28 …"
-        value={value}
-        onChange={(e) => patch(enc.id, { labor: e.target.value })}
       />
     </div>
   );
@@ -249,7 +164,14 @@ export function DiagnostikStep({
 
       <BgaEditor enc={enc} />
 
-      <LaborEditor enc={enc} />
+      <ChipGroupsEditor
+        enc={enc}
+        groups={LABOR_GROUPS}
+        section="laborSel"
+        label="Labor"
+        freeFieldKey="labor"
+        freePlaceholder="Werte / Auffälligkeiten als Freitext (z.B. Troponin hs 18 ng/L)"
+      />
 
       <ChipGroupsEditor
         enc={enc}
@@ -269,12 +191,13 @@ export function DiagnostikStep({
         freePlaceholder="Echo: normale LV-Funktion, kein Perikarderguss …"
       />
 
-      <FlatChipsEditor
+      <ChipGroupsEditor
         enc={enc}
-        chips={WEITERE_CHIPS}
+        groups={WEITERE_GROUPS}
+        section="weitereSel"
         label="Weitere"
-        fieldKey="weitere"
-        placeholder="Liquor, Mikrobiologie, Konsil, Spezialuntersuchungen …"
+        freeFieldKey="weitere"
+        freePlaceholder="Sonstige Befunde / Konsil-Anmeldung als Freitext"
       />
 
       <div className="card flex justify-between">

@@ -207,6 +207,9 @@ export type ActiveDiagnosis = {
   status: DxStatus;
   addedAt: number;
   note?: string;
+  /** Wenn gesetzt → render `freeText` als Label statt DiagnosisDef-Lookup; key beginnt
+   * dann mit `free:` und es gibt keine Severity / dischargeRules. */
+  freeText?: string;
 };
 
 // ───────── Diagnostik (incl. structured BGA) ─────────
@@ -259,11 +262,13 @@ export type Diagnostik = {
   bga: string;
   bgaValues: Partial<BgaValues>;
   labor: string;
+  laborSel: ChipSelection;
   bildgebung: string;
   bildgebungSel: ChipSelection;
   pocus: string;
   pocusSel: ChipSelection;
   weitere: string;
+  weitereSel: ChipSelection;
 };
 
 export type Treatment = {
@@ -275,6 +280,8 @@ export type Treatment = {
   infusionen: string;
   weitere: string;
 };
+
+export type TreatmentCounts = Partial<Record<keyof Treatment, Record<string, number>>>;
 
 export type Encounter = {
   id: EncounterId;
@@ -295,6 +302,7 @@ export type Encounter = {
   status?: StatusFindings;
   diagnostik?: Partial<Diagnostik>;
   treatment?: Partial<Treatment>;
+  treatmentCounts?: TreatmentCounts;
   /** discharge checks per diagnosis: keyed `${diagnosisKey}:${ruleIdx}` */
   dischargeChecked?: Record<string, boolean>;
   prozedere?: string;

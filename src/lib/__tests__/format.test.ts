@@ -51,9 +51,9 @@ describe('buildSummary — Anamnese composition', () => {
     const s = buildSummary(enc);
     expect(s).toContain('Leitsymptom: Thoraxschmerz');
     expect(s).toContain('drückend');
-    expect(s).toContain('Ereignis: beim Gehen aufgetreten');
-    expect(s).toContain('Risikofaktoren: Raucher');
-    expect(s).toContain('Letzte Mahlzeit: 18:00');
+    expect(s).toContain('E: beim Gehen aufgetreten');
+    expect(s).toContain('R: Raucher');
+    expect(s).toContain('L: 18:00');
   });
 });
 
@@ -68,10 +68,10 @@ describe('buildSummary — SAMPLER section split', () => {
       },
     });
     const s = buildSummary(enc);
-    expect(s).toContain('<u>Allergien:</>\nkeine bekannt');
-    expect(s).toContain('<u>Dauermedikation:</>\nASS, Bisoprolol');
-    expect(s).toContain('<u>Vordiagnosen:</>\nKHK, aHT');
-    expect(s).toContain('<u>Voroperationen:</>\nAppendektomie 2015');
+    expect(s).toContain('<u>A – Allergien:</>\nkeine bekannt');
+    expect(s).toContain('<u>M – Dauermedikation:</>\nASS, Bisoprolol');
+    expect(s).toContain('<u>P – Vordiagnosen:</>\nKHK, aHT');
+    expect(s).toContain('<u>P – Voroperationen:</>\nAppendektomie 2015');
   });
 });
 
@@ -325,6 +325,111 @@ describe('buildSummary — Bildgebung with modality prefix', () => {
     expect(s).toContain('- Bildgebung:');
     expect(s).toContain('Röntgen Rö-Thorax');
     expect(s).toContain('CT CT Abdomen');
+  });
+});
+
+describe('buildSummary — OPQRST + SAMPLER letter prefixes', () => {
+  it('prefixes each OPQRST value with its mnemonic letter', () => {
+    const enc = baseEnc({
+      leitsymptom: 'thoraxschmerz',
+      opqrst: {
+        onset: 'akut',
+        provocation: 'bei Belastung',
+        quality: 'drückend',
+        severity: '7/10',
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('Leitsymptom: Thoraxschmerz (O: akut, P: bei Belastung, Q: drückend, S: 7/10).');
+  });
+
+  it('inlines SAMPLER fields with S/E/R/L letter prefixes in Anamnese', () => {
+    const enc = baseEnc({
+      leitsymptom: 'thoraxschmerz',
+      sampler: {
+        symptoms: 'Husten seit 2 Tagen',
+        event: 'beim Gehen aufgetreten',
+        risiko: 'Raucher, KHK bekannt',
+        lastMeal: '18:00',
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('S: Husten seit 2 Tagen');
+    expect(s).toContain('E: beim Gehen aufgetreten');
+    expect(s).toContain('R: Raucher, KHK bekannt');
+    expect(s).toContain('L: 18:00');
+  });
+});
+
+describe('buildSummary — freetext diagnoses', () => {
+  it('renders freeText label in Hypothesen with (Freitext) tag', () => {
+    const enc = baseEnc({
+      diagnoses: [
+        { key: 'free:abc', status: 'suspected', addedAt: 0, freeText: 'Akute Bronchitis' },
+        { key: 'hypoglykaemie', status: 'confirmed', addedAt: 1 },
+      ],
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- Akute Bronchitis (Freitext): V.a.');
+    expect(s).toContain('- Hypoglykämie: bestätigt');
+  });
+});
+
+describe('buildSummary — Labor plus-joined', () => {
+  it('joins Labor chips across groups with " + "', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        laborSel: {
+          blocks: { chips: ['IN1-Labor'] },
+          werte: { chips: ['Troponin hs', 'D-Dimer'] },
+          infekt: { chips: ['CRP'] },
+        },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- Labor: IN1-Labor + Troponin hs + D-Dimer + CRP');
+  });
+});
+
+describe('buildSummary — Weitere multiline with prefix', () => {
+  it('renders Konsile/Sonstiges as separate prefixed lines', () => {
+    const enc = baseEnc({
+      diagnostik: {
+        weitereSel: {
+          konsile: { chips: ['Neurologisches Konsil'] },
+          sonstiges: { chips: ['Liquorpunktion'] },
+        },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- Weitere:');
+    expect(s).toContain('Konsile Neurologisches Konsil');
+    expect(s).toContain('Sonstiges Liquorpunktion');
+  });
+});
+
+describe('buildSummary — Therapie counters', () => {
+  it('renders chips with ×N when count ≥ 1', () => {
+    const enc = baseEnc({
+      treatmentCounts: {
+        analgetika: { 'Metamizol 1g i.v.': 2, 'Paracetamol 1g i.v.': 1 },
+        antibiotika: { 'Ceftriaxon 2g i.v.': 1 },
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('- Analgetika/Schmerzmittel'.replace('/', ' / ')); // accept either format
+    expect(s).toContain('Metamizol 1g i.v. ×2');
+    expect(s).toContain('Paracetamol 1g i.v. ×1');
+    expect(s).toContain('Ceftriaxon 2g i.v. ×1');
+  });
+
+  it('combines counts with free-text via " · "', () => {
+    const enc = baseEnc({
+      treatment: { analgetika: 'nicht vertragen' },
+      treatmentCounts: { analgetika: { 'Metamizol 1g i.v.': 1 } },
+    });
+    const s = buildSummary(enc);
+    expect(s).toMatch(/Metamizol 1g i\.v\. ×1.*nicht vertragen|nicht vertragen.*Metamizol 1g i\.v\. ×1/);
   });
 });
 

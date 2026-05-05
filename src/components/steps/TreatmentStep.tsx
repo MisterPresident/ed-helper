@@ -1,6 +1,7 @@
-import type { Treatment, Encounter } from '../../types';
+import type { Encounter, Treatment } from '../../types';
 import { TREATMENT_SECTIONS } from '../../data/treatment';
 import { useEncounters } from '../../store/encounters';
+import { TreatmentChip } from '../TreatmentChip';
 
 type TreatmentKey = keyof Treatment;
 
@@ -14,35 +15,31 @@ export function TreatmentStep({
   onBack: () => void;
 }) {
   const patch = useEncounters((s) => s.patchTreatment);
-
-  const appendChip = (key: TreatmentKey, chip: string) => {
-    const current = (enc.treatment?.[key] ?? '').trim();
-    const next = current ? `${current}, ${chip}` : chip;
-    patch(enc.id, { [key]: next });
-  };
+  const setCount = useEncounters((s) => s.setTreatmentCount);
 
   return (
     <div className="space-y-3">
       <div className="card">
         <h3 className="text-base font-semibold mb-1">Therapie</h3>
         <p className="text-sm text-slate-500">
-          Chips klicken, um Medikament mit Dosis anzuhängen. Freitext frei editierbar.
+          Chip klicken zum Hinzufügen / Mehrfachgabe (Linksklick = +1, Rechtsklick =
+          −1). Freitext für Besonderheiten.
         </p>
       </div>
       {TREATMENT_SECTIONS.map((sec) => {
         const value = enc.treatment?.[sec.key] ?? '';
+        const counts = enc.treatmentCounts?.[sec.key as TreatmentKey] ?? {};
         return (
           <div key={sec.key} className="card">
             <h4 className="font-semibold mb-2">{sec.label}</h4>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {sec.chips.map((c) => (
-                <button
+                <TreatmentChip
                   key={c}
-                  className="chip border-slate-300 hover:bg-slate-100"
-                  onClick={() => appendChip(sec.key, c)}
-                >
-                  + {c}
-                </button>
+                  label={c}
+                  count={counts[c] ?? 0}
+                  onChange={(next) => setCount(enc.id, sec.key, c, next)}
+                />
               ))}
             </div>
             <textarea
