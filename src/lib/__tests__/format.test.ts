@@ -236,9 +236,10 @@ describe('buildSummary — confirmed diagnosis discharge', () => {
   });
 });
 
-describe('buildSummary — ROS by organ system', () => {
-  it('groups positive/negative items by category, omits unknown', () => {
+describe('buildSummary — ROS inline in Anamnese', () => {
+  it('appends flat positiv/negativ list to Anamnese, no separate header', () => {
     const enc = baseEnc({
+      leitsymptom: 'thoraxschmerz',
       ros: {
         ros_const_fieber: 'positive',
         ros_const_nachtschweiss: 'negative',
@@ -248,11 +249,11 @@ describe('buildSummary — ROS by organ system', () => {
       },
     });
     const s = buildSummary(enc);
-    expect(s).toContain('<u>Anamnese (ROS):</>');
-    expect(s).toContain('- Konstitutionell / Allgemein: Fieber positiv, Nachtschweiß negativ');
-    expect(s).toContain('- Kardiovaskulär: Thoraxschmerz positiv, Palpitationen negativ');
-    // unknown → omitted
+    expect(s).not.toContain('Anamnese (ROS)');
+    expect(s).toContain('Fieber, Thoraxschmerz: positiv');
+    expect(s).toContain('Nachtschweiß, Palpitationen: negativ');
     expect(s).not.toContain('Kopfschmerz');
+    expect(s).toContain('<u>Anamnese:</>');
   });
 });
 

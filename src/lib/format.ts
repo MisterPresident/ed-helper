@@ -62,6 +62,9 @@ function buildAnamnese(enc: Encounter): string {
   if (sampler?.risiko?.trim()) lines.push(`R: ${sampler.risiko.trim()}.`);
   if (sampler?.lastMeal?.trim()) lines.push(`L: ${sampler.lastMeal.trim()}.`);
 
+  const rosLine = buildRos(enc);
+  if (rosLine) lines.push(rosLine);
+
   return lines.join(' ');
 }
 
@@ -250,17 +253,19 @@ function buildDiagnostik(enc: Encounter): string | null {
 function buildRos(enc: Encounter): string | null {
   const ros = enc.ros;
   if (!ros) return null;
-  const lines: string[] = [];
+  const positive: string[] = [];
+  const negative: string[] = [];
   for (const cat of ROS_CATEGORIES) {
-    const bits: string[] = [];
     for (const item of cat.items) {
       const state: RosState = ros[item.key] ?? 'unknown';
-      if (state === 'unknown') continue;
-      bits.push(`${item.label} ${state === 'positive' ? 'positiv' : 'negativ'}`);
+      if (state === 'positive') positive.push(item.label);
+      else if (state === 'negative') negative.push(item.label);
     }
-    if (bits.length) lines.push(`- ${cat.label}: ${bits.join(', ')}`);
   }
-  return lines.length ? lines.join('\n') : null;
+  const parts: string[] = [];
+  if (positive.length) parts.push(`${positive.join(', ')}: positiv`);
+  if (negative.length) parts.push(`${negative.join(', ')}: negativ`);
+  return parts.length ? parts.join('. ') + '.' : null;
 }
 
 // silence unused import lint when ROS_BY_KEY only used in tests/integrity
@@ -404,8 +409,6 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
   const hypothesen = buildHypothesen(enc);
   if (hypothesen) sections.push({ title: 'Hypothesen', body: hypothesen });
 
-  const ros = buildRos(enc);
-  if (ros) sections.push({ title: 'Anamnese (ROS)', body: ros });
 
   if (sampler?.allergien?.trim())
     sections.push({ title: 'A – Allergien', body: sampler.allergien.trim() });
