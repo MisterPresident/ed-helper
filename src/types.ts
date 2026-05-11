@@ -181,8 +181,10 @@ export type SymptomDef = {
   redFlagKeys: RedFlagKey[];
   differentials: DifferentialDx[];
   algorithmUrl?: string;
+  notfallguruUrl?: string;
   highlightedRosKeys?: string[];
   anamneseQuestions?: AnamneseQuestion[];
+  killerDiagnoses?: string[];
 };
 
 // ───────── Severity classifiers ─────────

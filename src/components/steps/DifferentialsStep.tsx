@@ -37,6 +37,8 @@ export function DifferentialsStep({
   const ddx = sym?.differentials ?? [];
   const activeKeys = new Set((enc.diagnoses ?? []).map((d) => d.key));
 
+  const killers = sym?.killerDiagnoses ?? [];
+
   return (
     <div className="card">
       <div className="flex items-start justify-between mb-3 gap-3">
@@ -46,17 +48,44 @@ export function DifferentialsStep({
             Klick zyklisch: offen → ausgeschlossen → wahrscheinlich → offen.
           </p>
         </div>
-        {sym?.algorithmUrl && (
-          <a
-            href={sym.algorithmUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-outline text-xs whitespace-nowrap"
-          >
-            🔗 Algorithmus
-          </a>
-        )}
+        <div className="flex gap-1.5 shrink-0">
+          {sym?.algorithmUrl && (
+            <a
+              href={sym.algorithmUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline text-xs whitespace-nowrap"
+            >
+              🔗 Leitlinie
+            </a>
+          )}
+          {sym?.notfallguruUrl && (
+            <a
+              href={sym.notfallguruUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline text-xs whitespace-nowrap"
+            >
+              🔗 notfallguru
+            </a>
+          )}
+        </div>
       </div>
+
+      {killers.length > 0 && (
+        <div className="mb-4 rounded-md border border-danger-200 bg-danger-50 px-3 py-2">
+          <p className="text-xs font-semibold uppercase tracking-wide text-danger-700 mb-1.5">
+            Nicht verpassen
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {killers.map((k) => (
+              <span key={k} className="rounded bg-danger-100 px-2 py-0.5 text-xs text-danger-800">
+                {k}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {ddx.length === 0 ? (
         <p className="text-sm text-slate-500">
