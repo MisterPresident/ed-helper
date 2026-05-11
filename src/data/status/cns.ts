@@ -19,6 +19,7 @@ export const cnsPalette: StatusPalette = {
       chips: [
         { key: 'cns_allseits_orientiert', label: 'allseits orientiert', isNormal: true },
         { key: 'cns_zeitlich_desorientiert', label: 'zeitlich desorientiert' },
+        { key: 'cns_oertlich_desorientiert', label: 'örtlich desorientiert' },
         { key: 'cns_situativ_desorientiert', label: 'situativ desorientiert' },
         { key: 'cns_personen_desorientiert', label: 'zur Person desorientiert' },
       ],
@@ -39,6 +40,15 @@ export const cnsPalette: StatusPalette = {
         { key: 'cns_hemiparese_re', label: 'Hemiparese rechts' },
         { key: 'cns_hemiparese_li', label: 'Hemiparese links' },
         { key: 'cns_armvorhalteversuch_pos', label: 'Armvorhalteversuch pathologisch' },
+        { key: 'cns_beinvorhalteversuch_pos', label: 'Beinvorhalteversuch pathologisch' },
+      ],
+    },
+    {
+      label: 'Sensibilität',
+      chips: [
+        { key: 'cns_sensibilitaet_seitengleich', label: 'seitengleich, kein Defizit', isNormal: true },
+        { key: 'cns_hypaesthesie_re', label: 'Hypaesthesie rechts' },
+        { key: 'cns_hypaesthesie_li', label: 'Hypaesthesie links' },
       ],
     },
     {

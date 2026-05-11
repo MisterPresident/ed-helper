@@ -13,6 +13,8 @@ export const abdomenPalette: StatusPalette = {
         { key: 'abd_druckschmerz_loc', label: 'lokalisierter Druckschmerz' },
         { key: 'abd_abwehrspannung', label: 'Abwehrspannung' },
         { key: 'abd_resistenz', label: 'Resistenz tastbar' },
+        { key: 'abd_nabelhernie', label: 'Nabelhernie weich' },
+        { key: 'abd_nabelhernie_dolent', label: 'Nabelhernie dolent' },
       ],
     },
     {
@@ -25,12 +27,10 @@ export const abdomenPalette: StatusPalette = {
       ],
     },
     {
-      label: 'Nierenlager / Leiste',
+      label: 'Leiste',
       chips: [
-        { key: 'abd_nierenlager_frei', label: 'Nierenlager frei', isNormal: true },
-        { key: 'abd_nierenlager_klopfschmerz_re', label: 'Klopfschmerz rechts' },
-        { key: 'abd_nierenlager_klopfschmerz_li', label: 'Klopfschmerz links' },
-        { key: 'abd_leistenhernie', label: 'Leistenhernie' },
+        { key: 'abd_leistenhernie', label: 'Leistenhernie weich' },
+        { key: 'abd_leistenhernie_dolent', label: 'Leistenhernie dolent' },
       ],
     },
   ],

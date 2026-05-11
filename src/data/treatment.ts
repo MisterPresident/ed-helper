@@ -93,6 +93,7 @@ export const TREATMENT_SECTIONS: TreatmentSection[] = [
     placeholder: 'z.B. NaCl 0,9% 500ml i.v.',
     chips: [
       'NaCl 0,9% 500ml i.v.',
+      'Elomel 500ml i.v.',
       'Ringer-Laktat 500ml i.v.',
       'Glukose 5% 500ml i.v.',
       'Glukose 40% 50ml i.v.',
