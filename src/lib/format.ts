@@ -84,33 +84,6 @@ function buildVitals(enc: Encounter): string | null {
   return parts.length ? parts.join('; ') : null;
 }
 
-// ───────── Hypothesen ─────────
-function buildHypothesen(enc: Encounter): string | null {
-  const dxs = enc.diagnoses ?? [];
-  if (dxs.length === 0) return null;
-  const lines: string[] = [];
-  for (const dx of dxs) {
-    const isFreeText = !!dx.freeText;
-    const def = isFreeText ? null : DIAGNOSES_BY_KEY[dx.key];
-    if (!isFreeText && !def) continue;
-    const label = dx.freeText ?? def!.label;
-    const statusLabel =
-      dx.status === 'confirmed'
-        ? 'bestätigt'
-        : dx.status === 'excluded'
-          ? 'ausgeschlossen'
-          : 'V.a.';
-    const sev = def?.severityClassifier?.(enc) ?? null;
-    const sevPart = sev
-      ? ` (${sev.stage}${sev.basedOn.length ? ' — ' + sev.basedOn.join(', ') : ''})`
-      : '';
-    const tagPart = isFreeText ? ' (Freitext)' : '';
-    const note = dx.note?.trim() ? ` — ${dx.note.trim()}` : '';
-    lines.push(`- ${label}${tagPart}: ${statusLabel}${sevPart}${note}`);
-  }
-  return lines.join('\n');
-}
-
 // ───────── Status ─────────
 function statusLine(enc: Encounter, sysKey: typeof STATUS_SYSTEMS[number]): string | null {
   const palette = STATUS_PALETTES[sysKey];
