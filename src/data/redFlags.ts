@@ -454,4 +454,90 @@ export const RED_FLAGS: Record<RedFlagKey, RedFlag> = {
     suspects: 'Respiratorische Enzephalopathie',
     action: 'O₂, BGA, nicht-invasive Beatmung erwägen',
   },
+
+  // --- Krampfanfall ---
+  rf_krampf_status: {
+    key: 'rf_krampf_status',
+    label: 'Anfallsdauer > 5 min oder repetitiv ohne vollständige Erholung',
+    suspects: 'Status epilepticus',
+    action: 'Benzodiazepin i.v./i.m., Neurologie, Intensiv',
+  },
+  rf_krampf_erstanfall: {
+    key: 'rf_krampf_erstanfall',
+    label: 'Erstanfall im Erwachsenenalter ohne bekannte Epilepsie',
+    suspects: 'Strukturelle oder metabolische Ursache',
+    action: 'cCT / MRT, Labor (BZ, Elektrolyte, Toxikologie)',
+  },
+  rf_krampf_herz: {
+    key: 'rf_krampf_herz',
+    label: 'Rasches Erwachen < 30 s, < 10 beobachtete Myoklonien',
+    suspects: 'Konvulsive Synkope (kardiale Ursache!)',
+    action: 'EKG, Echo, Langzeit-EKG',
+  },
+  rf_krampf_meningismus: {
+    key: 'rf_krampf_meningismus',
+    label: 'Fieber + Meningismus + Krampf',
+    suspects: 'Meningitis / Enzephalitis',
+    action: 'Sofort Antibiotika + Aciclovir, LP nach cCT',
+  },
+
+  // --- GI-Blutung ---
+  rf_gib_schock: {
+    key: 'rf_gib_schock',
+    label: 'Hypotension, Tachykardie, Hb-Abfall ≥ 2 g/dl',
+    suspects: 'Hämorrhagischer Schock',
+    action: 'Volumen + EK, Notfallendoskopie, Transfusions-Trigger Hb < 7',
+  },
+  rf_gib_varizen: {
+    key: 'rf_gib_varizen',
+    label: 'Bekannte Leberzirrhose oder portale Hypertension',
+    suspects: 'Varizenblutung (hohe Mortalität)',
+    action: 'Terlipressin, Ceftriaxon, sofortige Endoskopie',
+  },
+  rf_gib_massiv: {
+    key: 'rf_gib_massiv',
+    label: 'Massenhämatemesis (frisches Blut) oder instabile Vitalparameter',
+    suspects: 'Massivblutung obere GIB',
+    action: 'Massivtransfusion-Protokoll, Anästhesie, Endoskopie/IR',
+  },
+
+  // --- Anaphylaxie ---
+  rf_ana_stridor: {
+    key: 'rf_ana_stridor',
+    label: 'Stridor, Heiserkeit, Schluckbeschwerden, Zungenödem',
+    suspects: 'Larynxödem / drohende Asphyxie',
+    action: 'Adrenalin i.m. sofort, Intubationsbereitschaft, HNO',
+  },
+  rf_ana_schock: {
+    key: 'rf_ana_schock',
+    label: 'Hypotension, Tachykardie, Blässe/Mottling',
+    suspects: 'Anaphylaktischer Schock Grad III–IV',
+    action: 'Adrenalin i.m./i.v., Volumen, Lagerung, Intensiv',
+  },
+  rf_ana_bewusst: {
+    key: 'rf_ana_bewusst',
+    label: 'Bewusstseinsminderung, Synkope',
+    suspects: 'Zerebrale Minderperfusion / Anaphylaxie Grad IV',
+    action: 'Adrenalin i.v., Reanimationsbereitschaft',
+  },
+
+  // --- Bradykardie ---
+  rf_brady_instabil: {
+    key: 'rf_brady_instabil',
+    label: 'Hypotension, Schock, Dyspnoe, Synkope, Herzinsuffizienz',
+    suspects: 'Instabile Bradykardie → sofortige Therapie',
+    action: 'Atropin 0,5 mg i.v. (nicht bei AV-Block II° Typ 2!), Transkutanes Pacing',
+  },
+  rf_brady_av3: {
+    key: 'rf_brady_av3',
+    label: 'AV-Dissoziation, Kammerkomplexe < 40/min',
+    suspects: 'AV-Block III° (totaler AV-Block)',
+    action: 'Kein Atropin! Transventrikuläres Pacing, Kardiologie',
+  },
+  rf_brady_hyperkal: {
+    key: 'rf_brady_hyperkal',
+    label: 'Peaked-T-Wellen, breite QRS, sine-wave-Muster',
+    suspects: 'Hyperkaliämie',
+    action: 'Kalzium i.v., Insulin + Glukose, Natriumbikarbonat, Dialyse',
+  },
 };
