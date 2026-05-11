@@ -57,6 +57,32 @@ describe('buildSummary — Anamnese composition', () => {
   });
 });
 
+describe('buildSummary — Anamnese-Fragen', () => {
+  it('includes ja/nein answers in Anamnese, omits unknown', () => {
+    const enc = baseEnc({
+      leitsymptom: 'thoraxschmerz',
+      anamneseAnswers: {
+        thx_atemabh: 'ja',
+        thx_lageabh: 'nein',
+        thx_erstmalig: 'unknown',
+      },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('Atemabhängig: ja');
+    expect(s).toContain('Lageabhängig (besser im Sitzen/Vorlehnen): nein');
+    expect(s).not.toContain('Erstmalig');
+  });
+
+  it('omits question block when all answers are unknown', () => {
+    const enc = baseEnc({
+      leitsymptom: 'thoraxschmerz',
+      anamneseAnswers: { thx_atemabh: 'unknown' },
+    });
+    const s = buildSummary(enc);
+    expect(s).not.toContain('Atemabhängig');
+  });
+});
+
 describe('buildSummary — SAMPLER section split', () => {
   it('emits Allergien / Dauermedikation / Vordiagnosen / Voroperationen as separate sections', () => {
     const enc = baseEnc({

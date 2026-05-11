@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
   ActiveDiagnosis,
+  AnamneseAnswer,
   BgaValues,
   ChipSelection,
   DiagnosisKey,
@@ -78,6 +79,7 @@ type Actions = {
   setProzedere: (id: EncounterId, text: string) => void;
   setProzedereChips: (id: EncounterId, chips: string[]) => void;
   setNotes: (id: EncounterId, notes: string) => void;
+  setAnamneseAnswer: (id: EncounterId, key: string, answer: AnamneseAnswer) => void;
 };
 
 const nextLabel = (existing: Encounter[]): string => `Patient ${existing.length + 1}`;
@@ -347,6 +349,14 @@ export const useEncounters = create<State & Actions>()(
 
       setNotes: (id, notes) =>
         set((s) => patchEncounter(s, id, (e) => ({ ...e, notes }))),
+
+      setAnamneseAnswer: (id, key, answer) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            anamneseAnswers: { ...(e.anamneseAnswers ?? {}), [key]: answer },
+          }))
+        ),
     }),
     {
       name: 'er-helper:encounters:v1',

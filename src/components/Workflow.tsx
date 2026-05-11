@@ -45,7 +45,8 @@ const FLOW_NO_OPQRST: WorkflowStep[] = FLOW_WITH_OPQRST.filter((s) => s !== 'opq
 
 function stepsFor(enc: Encounter): WorkflowStep[] {
   const sym = enc.leitsymptom ? SYMPTOMS_BY_KEY[enc.leitsymptom] : undefined;
-  return sym?.usesOPQRST === false ? FLOW_NO_OPQRST : FLOW_WITH_OPQRST;
+  const showOpqrst = sym?.usesOPQRST || (sym?.anamneseQuestions?.length ?? 0) > 0;
+  return showOpqrst ? FLOW_WITH_OPQRST : FLOW_NO_OPQRST;
 }
 
 function nextStep(enc: Encounter, current: WorkflowStep): WorkflowStep {

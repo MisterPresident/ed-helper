@@ -32,6 +32,15 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_endo_schwitzen',
       'ros_resp_pleuritisch',
     ],
+    anamneseQuestions: [
+      { key: 'thx_atemabh', label: 'Atemabhängig?' },
+      { key: 'thx_lageabh', label: 'Lageabhängig (besser im Sitzen/Vorlehnen)?' },
+      { key: 'thx_ausstrahlung', label: 'Ausstrahlung in Arm, Kiefer oder Rücken?' },
+      { key: 'thx_schwitzuebelkeit', label: 'Schweißausbruch oder Übelkeit?' },
+      { key: 'thx_erstmalig', label: 'Erstmalig auftretend?' },
+      { key: 'thx_khk_rf', label: 'Bekannte KHK oder kardiovask. Risikofaktoren?' },
+      { key: 'thx_immobil', label: 'Immobilisation oder Flugreise in letzten 4 Wochen?' },
+    ],
   },
   {
     key: 'dyspnoe',
@@ -64,6 +73,15 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_cv_pnd',
       'ros_cv_oedeme',
       'ros_cv_thoraxschmerz',
+    ],
+    anamneseQuestions: [
+      { key: 'dysp_akut', label: 'Akut einsetzend (< 1 Stunde)?' },
+      { key: 'dysp_orthopnoe', label: 'Orthopnoe (Dyspnoe im Liegen)?' },
+      { key: 'dysp_stridor', label: 'Stridor / inspiratorisches Geräusch?' },
+      { key: 'dysp_copd_asthma', label: 'Bekannte COPD oder Asthma?' },
+      { key: 'dysp_fieber', label: 'Fieber?' },
+      { key: 'dysp_tvt_lae', label: 'TVT oder LAE in der Vorgeschichte?' },
+      { key: 'dysp_rauchen', label: 'Raucheranamnese?' },
     ],
   },
   {
@@ -103,6 +121,15 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_const_fieber',
       'ros_uro_dysurie',
     ],
+    anamneseQuestions: [
+      { key: 'abd_uebelkeit_erbrechen', label: 'Übelkeit oder Erbrechen?' },
+      { key: 'abd_diarrhoe', label: 'Diarrhoe?' },
+      { key: 'abd_blut_stuhl', label: 'Blut im Stuhl oder Teerstuhl?' },
+      { key: 'abd_wandernder_schmerz', label: 'Schmerz periumbilikal beginnend, dann wandernd (RUQ/RLQ)?' },
+      { key: 'abd_fieber', label: 'Fieber?' },
+      { key: 'abd_letzter_stuhl', label: 'Stuhlgang seit > 2 Tagen ausgeblieben?' },
+      { key: 'abd_schwangerschaft', label: 'Schwangerschaft möglich?' },
+    ],
   },
   {
     key: 'kopfschmerz',
@@ -140,6 +167,14 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_gi_uebelkeit',
       'ros_gi_erbrechen',
     ],
+    anamneseQuestions: [
+      { key: 'kopf_thunderclap', label: 'Erstmalig oder stärkster KS des Lebens (Thunderclap)?' },
+      { key: 'kopf_akut', label: 'Akut einsetzend (< 1 Minute bis Maximum)?' },
+      { key: 'kopf_meningismus', label: 'Nackensteifigkeit / Meningismus?' },
+      { key: 'kopf_fieber', label: 'Fieber?' },
+      { key: 'kopf_visus', label: 'Visusveränderungen oder Doppelbilder?' },
+      { key: 'kopf_migr_bekannt', label: 'Bekannte Migräne (typischer Anfall)?' },
+    ],
   },
   {
     key: 'synkope',
@@ -172,6 +207,14 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_gi_haematemesis',
       'ros_gi_melaena',
     ],
+    anamneseQuestions: [
+      { key: 'syn_vorwarnung', label: 'Vorwarnsymptome (Schwindel, Schwarzwerden, Ohrensausen)?' },
+      { key: 'syn_bewusstlos', label: 'Vollständige Bewusstlosigkeit (nicht nur Stürzen)?' },
+      { key: 'syn_zungenbiss', label: 'Zungenbiss oder Einnässen?' },
+      { key: 'syn_herzrasen', label: 'Herzrasen unmittelbar vor Synkope?' },
+      { key: 'syn_belastung', label: 'Synkope unter körperlicher Belastung?' },
+      { key: 'syn_familie_phta', label: 'Familienanamnese plötzlicher Herztod (< 50 Jahre)?' },
+    ],
   },
   {
     key: 'schwindel',
@@ -195,6 +238,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_hno_tinnitus',
       'ros_neu_taubheit',
       'ros_gi_uebelkeit',
+    ],
+    anamneseQuestions: [
+      { key: 'schw_dreh', label: 'Drehschwindel (rotatorisch, nicht Schwanken)?' },
+      { key: 'schw_lage', label: 'Lageabhängig provozierbar?' },
+      { key: 'schw_tinnitus_hoerverlust', label: 'Tinnitus oder Hörverlust?' },
+      { key: 'schw_neuro', label: 'Doppelbilder, Dysarthrie oder Gangstörung?' },
+      { key: 'schw_erstmalig', label: 'Erstmalig aufgetretener Schwindel?' },
     ],
   },
   {
@@ -228,6 +278,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_neu_gedaechtnis',
       'ros_aug_visus',
     ],
+    anamneseQuestions: [
+      { key: 'sht_bewusstlos', label: 'Bewusstlosigkeit direkt nach Trauma?' },
+      { key: 'sht_amnesie', label: 'Amnesie für das Ereignis?' },
+      { key: 'sht_erbrechen', label: 'Erbrechen nach dem Trauma?' },
+      { key: 'sht_antikoag', label: 'Gerinnungshemmung (Marcumar, NOAK, ASS+Clopidogrel)?' },
+      { key: 'sht_hws_schmerz', label: 'Nackenschmerz / HWS-Beschwerden?' },
+    ],
   },
   {
     key: 'fokal_neuro',
@@ -260,6 +317,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_neu_krampf',
       'ros_neu_kopfschmerz',
     ],
+    anamneseQuestions: [
+      { key: 'fn_akut', label: 'Akut einsetzend (Sekunden bis Minuten)?' },
+      { key: 'fn_vorangegangene_tia', label: 'Vorausgegangene TIA oder Schlaganfall?' },
+      { key: 'fn_vhf', label: 'Bekanntes Vorhofflimmern?' },
+      { key: 'fn_antikoag', label: 'Gerinnungshemmung (Marcumar, NOAK)?' },
+      { key: 'fn_postiktal', label: 'Krampfanfall vorausgegangen (Verdacht Todd-Parese)?' },
+    ],
   },
   {
     key: 'ruecken_flanke',
@@ -290,6 +354,14 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_const_fieber',
       'ros_haem_haematome',
     ],
+    anamneseQuestions: [
+      { key: 'rueck_kolik', label: 'Kolikartiger Schmerz mit Ausstrahlung in Leiste?' },
+      { key: 'rueck_haematurie', label: 'Blut im Urin (Hämaturie)?' },
+      { key: 'rueck_fieber', label: 'Fieber oder Schüttelfrost?' },
+      { key: 'rueck_neuro', label: 'Neurologische Ausfälle (Schwäche, Taubheit, Blasen-/Mastdarmstörung)?' },
+      { key: 'rueck_trauma', label: 'Vorangegangenes Trauma?' },
+      { key: 'rueck_bekannt', label: 'Bekanntes AAA oder Aortenerkrankung?' },
+    ],
   },
   {
     key: 'palpitationen',
@@ -317,6 +389,14 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_resp_dyspnoe',
       'ros_endo_schwitzen',
       'ros_endo_temperatur',
+    ],
+    anamneseQuestions: [
+      { key: 'palp_synkope', label: 'Synkope oder Präsynkope während des Ereignisses?' },
+      { key: 'palp_thoraxschmerz', label: 'Thoraxschmerz begleitend?' },
+      { key: 'palp_regelmaessig', label: 'Rhythmus wahrgenommen als regelmäßig?' },
+      { key: 'palp_plötzlich', label: 'Plötzlicher Beginn und Abbruch?' },
+      { key: 'palp_bekannte_arrhythmie', label: 'Bekannte Rhythmusstörung oder Herzerkrankung?' },
+      { key: 'palp_hyperthyreose', label: 'Bekannte oder vermutete Schilddrüsenerkrankung?' },
     ],
   },
   {
@@ -346,6 +426,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_resp_dyspnoe',
       'ros_neu_schwaeche',
       'ros_gi_uebelkeit',
+    ],
+    anamneseQuestions: [
+      { key: 'hyp_kopfschmerz', label: 'Kopfschmerz oder Sehstörung?' },
+      { key: 'hyp_thoraxschmerz', label: 'Thoraxschmerz oder Dyspnoe?' },
+      { key: 'hyp_fokal', label: 'Neurologische Ausfälle (Schwäche, Sprache, Sehen)?' },
+      { key: 'hyp_schwanger', label: 'Schwangerschaft bekannt?' },
+      { key: 'hyp_ad_absetzt', label: 'Antihypertensiva abgesetzt oder nicht eingenommen?' },
     ],
   },
   {
@@ -378,6 +465,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_psy_suizid',
       'ros_endo_schwitzen',
       'ros_cv_palpitationen',
+    ],
+    anamneseQuestions: [
+      { key: 'intox_substanz_bekannt', label: 'Substanz bekannt (Medikament, Droge, CO)?' },
+      { key: 'intox_suizidal', label: 'Suizidales Geschehen?' },
+      { key: 'intox_mehrere_substanzen', label: 'Mehrere Substanzen möglich (Polytoxikomanie)?' },
+      { key: 'intox_zeitpunkt', label: 'Einnahmezeitpunkt bekannt?' },
+      { key: 'intox_erbrechen', label: 'Bereits erbrochen?' },
     ],
   },
   {
@@ -416,6 +510,13 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_haut_ausschlag',
       'ros_const_muedigkeit',
     ],
+    anamneseQuestions: [
+      { key: 'sep_fokus_bekannt', label: 'Infektfokus klinisch erkennbar oder bekannt?' },
+      { key: 'sep_immunsuppr', label: 'Immunsuppression (Kortison, Chemo, HIV, Asplenie)?' },
+      { key: 'sep_eingriff', label: 'Kürzlicher Eingriff, Katheter oder Fremdkörper?' },
+      { key: 'sep_ausland', label: 'Auslandsaufenthalt oder Tierkontakt?' },
+      { key: 'sep_petechien', label: 'Petechien oder Exanthem?' },
+    ],
   },
   {
     key: 'bewusstseinsveraenderung',
@@ -452,6 +553,14 @@ export const SYMPTOMS: SymptomDef[] = [
       'ros_psy_suizid',
       'ros_neu_kopfschmerz',
       'ros_resp_dyspnoe',
+    ],
+    anamneseQuestions: [
+      { key: 'bwv_akut', label: 'Akut einsetzend (Minuten bis Stunden)?' },
+      { key: 'bwv_diabetes', label: 'Bekannter Diabetes mellitus?' },
+      { key: 'bwv_intox_möglich', label: 'Intoxikation oder Medikamenteneinnahme möglich?' },
+      { key: 'bwv_krampf', label: 'Krampfanfall beobachtet oder anamnestisch?' },
+      { key: 'bwv_trauma', label: 'Vorangegangenes Trauma oder Sturz?' },
+      { key: 'bwv_fieber', label: 'Fieber?' },
     ],
   },
   {

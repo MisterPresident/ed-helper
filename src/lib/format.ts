@@ -50,6 +50,11 @@ function buildAnamnese(enc: Encounter): string {
       if (v) opq.push(`${f.mnemonic}: ${v}`);
     }
     lines.push(`Leitsymptom: ${sym.label}${opq.length ? ` (${opq.join(', ')})` : ''}.`);
+
+    const answered = (sym.anamneseQuestions ?? [])
+      .filter((q) => (enc.anamneseAnswers?.[q.key] ?? 'unknown') !== 'unknown')
+      .map((q) => `${q.label.replace(/\?$/, '')}: ${enc.anamneseAnswers![q.key]}`);
+    if (answered.length) lines.push(answered.join('. ') + '.');
   }
   const sampler = enc.sampler;
   if (sampler?.symptoms?.trim()) lines.push(`S: ${sampler.symptoms.trim()}.`);

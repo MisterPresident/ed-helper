@@ -166,6 +166,13 @@ export type RosCategoryDef = {
   items: RosItem[];
 };
 
+export type AnamneseQuestion = {
+  key: string;
+  label: string;
+};
+
+export type AnamneseAnswer = 'ja' | 'nein' | 'unknown';
+
 export type SymptomDef = {
   key: SymptomKey;
   label: string;
@@ -175,6 +182,7 @@ export type SymptomDef = {
   differentials: DifferentialDx[];
   algorithmUrl?: string;
   highlightedRosKeys?: string[];
+  anamneseQuestions?: AnamneseQuestion[];
 };
 
 // ───────── Severity classifiers ─────────
@@ -308,4 +316,5 @@ export type Encounter = {
   prozedere?: string;
   prozedereChips?: string[];
   notes?: string;
+  anamneseAnswers?: Record<string, AnamneseAnswer>;
 };
