@@ -341,20 +341,47 @@ function buildScores(enc: Encounter, detail: DetailMode): string | null {
   return blocks.join('\n');
 }
 
-// ───────── DDx ─────────
-function buildDDx(enc: Encounter): string | null {
-  if (!enc.leitsymptom) {
-    return enc.differentialsFree?.trim() || null;
-  }
-  const sym = SYMPTOMS_BY_KEY[enc.leitsymptom];
-  if (!sym) return null;
+// ───────── Differentialdiagnose (Hypothesen + DDx kombiniert) ─────────
+function buildDifferentialdiagnose(enc: Encounter): string | null {
   const lines: string[] = [];
-  for (const d of sym.differentials) {
-    const state = enc.differentials?.[d.key] ?? 'unknown';
-    if (state === 'unknown') continue;
-    const tag = state === 'positive' ? 'wahrscheinlich' : 'ausgeschlossen';
-    lines.push(`- ${d.label}: ${tag}`);
+
+  // Active hypotheses first
+  const activeDxKeys = new Set<string>();
+  for (const dx of enc.diagnoses ?? []) {
+    const isFreeText = !!dx.freeText;
+    const def = isFreeText ? null : DIAGNOSES_BY_KEY[dx.key];
+    if (!isFreeText && !def) continue;
+    if (dx.key) activeDxKeys.add(dx.key);
+    const label = dx.freeText ?? def!.label;
+    const statusLabel =
+      dx.status === 'confirmed'
+        ? 'bestätigt'
+        : dx.status === 'excluded'
+          ? 'ausgeschlossen'
+          : 'V.a.';
+    const sev = def?.severityClassifier?.(enc) ?? null;
+    const sevPart = sev
+      ? ` (${sev.stage}${sev.basedOn.length ? ' — ' + sev.basedOn.join(', ') : ''})`
+      : '';
+    const tagPart = isFreeText ? ' (Freitext)' : '';
+    const note = dx.note?.trim() ? ` — ${dx.note.trim()}` : '';
+    lines.push(`- ${label}${tagPart}: ${statusLabel}${sevPart}${note}`);
   }
+
+  // Structured DDx (skip if already covered by an active hypothesis)
+  if (enc.leitsymptom) {
+    const sym = SYMPTOMS_BY_KEY[enc.leitsymptom];
+    if (sym) {
+      for (const d of sym.differentials) {
+        const state = enc.differentials?.[d.key] ?? 'unknown';
+        if (state === 'unknown') continue;
+        if (d.diagnosisKey && activeDxKeys.has(d.diagnosisKey)) continue;
+        const tag = state === 'positive' ? 'wahrscheinlich' : 'ausgeschlossen';
+        lines.push(`- ${d.label}: ${tag}`);
+      }
+    }
+  }
+
   if (enc.differentialsFree?.trim()) lines.push(`- Weitere: ${enc.differentialsFree.trim()}`);
   return lines.length ? lines.join('\n') : null;
 }
@@ -406,8 +433,6 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
   const vitals = buildVitals(enc);
   if (vitals) sections.push({ title: 'Vitalwerte', body: vitals });
 
-  const hypothesen = buildHypothesen(enc);
-  if (hypothesen) sections.push({ title: 'Hypothesen', body: hypothesen });
 
 
   if (sampler?.allergien?.trim())
@@ -434,7 +459,7 @@ export function buildSummary(enc: Encounter, options: SummaryOptions = {}): stri
   const scores = buildScores(enc, detail);
   if (scores) sections.push({ title: 'Scores', body: scores });
 
-  const ddx = buildDDx(enc);
+  const ddx = buildDifferentialdiagnose(enc);
   if (ddx) sections.push({ title: 'Differentialdiagnose', body: ddx });
 
   const discharge = buildDischarge(enc);

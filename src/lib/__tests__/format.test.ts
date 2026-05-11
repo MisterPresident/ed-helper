@@ -206,7 +206,7 @@ describe('buildSummary — DDx', () => {
 });
 
 describe('buildSummary — confirmed diagnosis discharge', () => {
-  it('renders Hypothesen and per-diagnosis Entlassungskriterien with checked state', () => {
+  it('renders diagnoses under Differentialdiagnose and Entlassungskriterien', () => {
     const enc = baseEnc({
       diagnoses: [
         { key: 'hypoglykaemie', status: 'confirmed', addedAt: 0 },
@@ -214,7 +214,8 @@ describe('buildSummary — confirmed diagnosis discharge', () => {
       dischargeChecked: { 'hypoglykaemie:0': true, 'hypoglykaemie:1': true },
     });
     const s = buildSummary(enc);
-    expect(s).toContain('<u>Hypothesen:</>');
+    expect(s).not.toContain('<u>Hypothesen:</>');
+    expect(s).toContain('<u>Differentialdiagnose:</>');
     expect(s).toContain('Hypoglykämie: bestätigt');
     expect(s).toContain('<u>Entlassungskriterien:</>');
     expect(s).toContain('☑');
@@ -230,6 +231,7 @@ describe('buildSummary — confirmed diagnosis discharge', () => {
       ],
     });
     const s = buildSummary(enc);
+    expect(s).toContain('<u>Differentialdiagnose:</>');
     expect(s).toContain('Hypoglykämie: bestätigt');
     expect(s).toContain('Hypertonie: V.a.');
     expect(s).toContain('Hyperglykämie: ausgeschlossen');
