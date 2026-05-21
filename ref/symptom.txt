@@ -6,3 +6,12 @@
 # Schwindel
 # Kopfschmerz
 # Bewusstseinsveränderung
+
+## Gastrointestinal
+# Abdomenschmerz
+# Obere GI-Blutung (Hämatemesis / Meläna)
+# Untere GI-Blutung (Hämatochezie)
+# Übelkeit / Erbrechen
+# Diarrhoe
+# Obstipation / Stuhlverhalt
+# Ikterus

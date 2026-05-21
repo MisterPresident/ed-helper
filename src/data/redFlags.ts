@@ -481,6 +481,140 @@ export const RED_FLAGS: Record<RedFlagKey, RedFlag> = {
     action: 'Sofort Antibiotika + Aciclovir, LP nach cCT',
   },
 
+  // --- Übelkeit / Erbrechen ---
+  rf_ueb_icp: {
+    key: 'rf_ueb_icp',
+    label: 'Schwallartiges Erbrechen + Kopfschmerz / Vigilanzminderung / Stauungspapille',
+    suspects: 'V.a. Hirndruck (ICB, Tumor, Hydrozephalus)',
+    action: 'CCT sofort, Oberkörperhochlagerung, Neurochirurgie',
+  },
+  rf_ueb_ileus: {
+    key: 'rf_ueb_ileus',
+    label: 'Schwallartiges, fäkulent riechendes Erbrechen, Stuhl-/Windverhalt',
+    suspects: 'V.a. Ileus (mechanisch/paralytisch)',
+    action: 'Röntgen/CT Abdomen, Magensonde, Chirurgie',
+  },
+  rf_ueb_gib: {
+    key: 'rf_ueb_gib',
+    label: 'Hämatemesis oder kaffeesatzartiges Erbrechen',
+    suspects: 'V.a. obere GI-Blutung',
+    action: 'GBS-Score, Hb-Kontrolle, Endoskopie',
+  },
+  rf_ueb_dka: {
+    key: 'rf_ueb_dka',
+    label: 'Erbrechen + Polyurie + Kussmaul-Atmung / azetonischer Foetor',
+    suspects: 'V.a. diabetische Ketoazidose',
+    action: 'BZ, BGA, Keton, Volumen + Insulin',
+  },
+  rf_ueb_dehydration: {
+    key: 'rf_ueb_dehydration',
+    label: 'Schwere Dehydration (Hypotension, Oligurie, Vigilanz ↓)',
+    suspects: 'V.a. hypovolämischer Schock',
+    action: 'Volumengabe, Elektrolyte, Ursache klären',
+  },
+  rf_ueb_schwanger: {
+    key: 'rf_ueb_schwanger',
+    label: 'Therapierefraktäres Erbrechen in der Schwangerschaft, Gewichtsverlust > 5 %',
+    suspects: 'V.a. Hyperemesis gravidarum',
+    action: 'Antiemese, Volumengabe, Gyn-Konsil, B1-Substitution',
+  },
+
+  // --- Diarrhoe ---
+  rf_diar_blutig: {
+    key: 'rf_diar_blutig',
+    label: 'Blutige Diarrhoe + Fieber / Tenesmen',
+    suspects: 'V.a. invasive bakterielle Enteritis / EHEC / ischämische Kolitis',
+    action: 'Stuhlkultur inkl. EHEC, kein Loperamid, ggf. CT',
+  },
+  rf_diar_sepsis: {
+    key: 'rf_diar_sepsis',
+    label: 'Fieber + Vigilanz ↓ + Hypotension oder Laktat ↑',
+    suspects: 'V.a. enterale Sepsis / Toxisches Megakolon',
+    action: 'Sepsis-Bundle, BK, Volumen, breite AB ≤ 1 h',
+  },
+  rf_diar_dehydration: {
+    key: 'rf_diar_dehydration',
+    label: 'Schwere Volumenverluste, Hypotension, Oligurie, Hypernatriämie',
+    suspects: 'V.a. dekompensierte Dehydration',
+    action: 'i.v.-Volumengabe, Elektrolytausgleich, Monitoring',
+  },
+  rf_diar_cdiff: {
+    key: 'rf_diar_cdiff',
+    label: 'Antibiose / Krankenhausaufenthalt in den letzten 8 Wochen',
+    suspects: 'V.a. Clostridioides-difficile-Infektion',
+    action: 'GDH/Toxin-Test, Isolation, Vancomycin oral / Fidaxomicin',
+  },
+  rf_diar_immunsuppr: {
+    key: 'rf_diar_immunsuppr',
+    label: 'Immunsuppression, HIV, Chemo, Steroide',
+    suspects: 'Opportunistische Erreger / fulminanter Verlauf',
+    action: 'Erweiterte Stuhldiagnostik (CMV, Cryptosporidien), frühe AB',
+  },
+
+  // --- Obstipation / Stuhlverhalt ---
+  rf_obs_ileus: {
+    key: 'rf_obs_ileus',
+    label: 'Geblähtes Abdomen + Erbrechen + Stuhl-/Windverhalt',
+    suspects: 'V.a. mechanischer / paralytischer Ileus',
+    action: 'Röntgen/CT Abdomen, Magensonde, Chirurgie',
+  },
+  rf_obs_perforation: {
+    key: 'rf_obs_perforation',
+    label: 'Peritonismus, freie Luft, Abwehrspannung',
+    suspects: 'V.a. Hohlorganperforation (Stercoral / tumorbedingt)',
+    action: 'CT Abdomen, Chirurgie',
+  },
+  rf_obs_malignom: {
+    key: 'rf_obs_malignom',
+    label: 'B-Symptomatik, Stuhlkaliberänderung, Blut im Stuhl, Gewichtsverlust',
+    suspects: 'V.a. kolorektales Karzinom / Stenose',
+    action: 'CT Abdomen, Koloskopie zeitnah',
+  },
+  rf_obs_caudasynd: {
+    key: 'rf_obs_caudasynd',
+    label: 'Reithosenhypästhesie, Blasen-/Mastdarmstörung, Rückenschmerz',
+    suspects: 'V.a. Cauda-equina-Syndrom',
+    action: 'MRT LWS notfallmäßig, Neurochirurgie',
+  },
+  rf_obs_elektrolyte: {
+    key: 'rf_obs_elektrolyte',
+    label: 'Hypokaliämie / Hyperkalzämie / Hypothyreose',
+    suspects: 'Metabolische Ursache der Obstipation',
+    action: 'Labor, ursächliche Therapie',
+  },
+
+  // --- Ikterus ---
+  rf_ikt_cholangitis: {
+    key: 'rf_ikt_cholangitis',
+    label: 'Charcot-Trias (Ikterus + Fieber + RUQ-Schmerz) / Reynolds-Pentade',
+    suspects: 'V.a. akute (eitrige) Cholangitis',
+    action: 'BK, breite AB ≤ 1 h, ERCP innerhalb 24 h',
+  },
+  rf_ikt_leberversagen: {
+    key: 'rf_ikt_leberversagen',
+    label: 'Ikterus + Enzephalopathie + INR > 1,5 ohne vorbestehende Lebererkrankung',
+    suspects: 'V.a. akutes Leberversagen',
+    action: 'Hepatologie/Transplantzentrum, NAC bei V.a. Paracetamol',
+  },
+  rf_ikt_haemolyse: {
+    key: 'rf_ikt_haemolyse',
+    label: 'Rascher Hb-Abfall, LDH ↑, Haptoglobin ↓, Bili indirekt ↑',
+    suspects: 'V.a. hämolytische Krise',
+    action: 'Coombs, Retikulozyten, Blutausstrich, Hämatologie',
+  },
+  rf_ikt_sepsis: {
+    key: 'rf_ikt_sepsis',
+    label: 'Sepsiszeichen (qSOFA ≥ 2, Laktat ↑) bei Ikterus',
+    suspects: 'V.a. biliäre Sepsis / septische Cholangitis',
+    action: 'Sepsis-Bundle, Bildgebung (Sono/CT), frühe Galleableitung',
+  },
+  rf_ikt_obstruktion: {
+    key: 'rf_ikt_obstruktion',
+    label: 'Schmerzloser progredienter Ikterus + Gewichtsverlust',
+    suspects: 'V.a. maligne Gallenwegsobstruktion (Pankreaskopf, Klatskin)',
+    action: 'CT/MRCP, Tumormarker, interdisziplinäre Planung',
+  },
+
   // --- GI-Blutung ---
   rf_gib_schock: {
     key: 'rf_gib_schock',
@@ -496,9 +630,21 @@ export const RED_FLAGS: Record<RedFlagKey, RedFlag> = {
   },
   rf_gib_massiv: {
     key: 'rf_gib_massiv',
-    label: 'Massenhämatemesis (frisches Blut) oder instabile Vitalparameter',
-    suspects: 'Massivblutung obere GIB',
+    label: 'Massenhämatemesis / Massive Hämatochezie / instabile Vitalparameter',
+    suspects: 'Massivblutung (obere oder untere GIB)',
     action: 'Massivtransfusion-Protokoll, Anästhesie, Endoskopie/IR',
+  },
+  rf_gib_ischaemie: {
+    key: 'rf_gib_ischaemie',
+    label: 'Bauchschmerz > Befund + Hämatochezie + vaskuläres Risiko (VHF, AVK, Hypoperfusion)',
+    suspects: 'V.a. ischämische Kolitis / Mesenterialischämie',
+    action: 'Laktat, CT-Angio Abdomen, frühe chirurgische Mitbeurteilung',
+  },
+  rf_gib_aortoent: {
+    key: 'rf_gib_aortoent',
+    label: 'Z.n. AAA-OP / endovaskulärer Stent + obere GI-Blutung',
+    suspects: 'V.a. aorto-enterale Fistel',
+    action: 'Sofort CT-Angio Aorta, Gefäßchirurgie',
   },
 
   // --- Anaphylaxie ---
