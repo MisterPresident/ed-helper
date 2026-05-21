@@ -173,6 +173,49 @@ export type AnamneseQuestion = {
 
 export type AnamneseAnswer = 'ja' | 'nein' | 'unknown';
 
+// ───────── Flowchart / Decision tree ─────────
+/** A FlowDriver tells the renderer what existing encounter state resolves
+ *  a decision node automatically. `manual` means the user must click. */
+export type FlowDriver =
+  | { kind: 'anamnese'; questionKey: string }
+  | { kind: 'redflag'; key: RedFlagKey }
+  | { kind: 'manual' };
+
+export type FlowEdge = {
+  /** Value of the driver that picks this branch.
+   *  - anamnese:  'ja' | 'nein' | 'unknown'
+   *  - redflag:   'positive' | 'excluded' | 'unknown'
+   *  - manual:    arbitrary string set by user click */
+  when: string;
+  /** Short label rendered on/next to the option (default = capitalized `when`). */
+  label?: string;
+  to: string;
+};
+
+export type FlowNodeType = 'decision' | 'action' | 'diagnosis' | 'disposition';
+
+export type FlowNode = {
+  key: string;
+  type: FlowNodeType;
+  label: string;
+  detail?: string;
+  /** decision-only */
+  driver?: FlowDriver;
+  edges?: FlowEdge[];
+  /** linear next for action nodes */
+  next?: string;
+  /** optional cross-references rendered as chips */
+  scoreKey?: ScoreKey;
+  redFlagKey?: RedFlagKey;
+  diagnosisKey?: DiagnosisKey;
+};
+
+export type FlowchartDef = {
+  symptomKey: SymptomKey;
+  rootKey: string;
+  nodes: Record<string, FlowNode>;
+};
+
 export type SymptomDef = {
   key: SymptomKey;
   label: string;
@@ -319,4 +362,6 @@ export type Encounter = {
   prozedereChips?: string[];
   notes?: string;
   anamneseAnswers?: Record<string, AnamneseAnswer>;
+  /** Manual selections in the flowchart, keyed by node.key → chosen edge.when */
+  flowDecisions?: Record<string, string>;
 };

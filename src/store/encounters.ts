@@ -80,6 +80,9 @@ type Actions = {
   setProzedereChips: (id: EncounterId, chips: string[]) => void;
   setNotes: (id: EncounterId, notes: string) => void;
   setAnamneseAnswer: (id: EncounterId, key: string, answer: AnamneseAnswer) => void;
+  setFlowDecision: (id: EncounterId, nodeKey: string, value: string) => void;
+  clearFlowDecision: (id: EncounterId, nodeKey: string) => void;
+  resetFlowDecisions: (id: EncounterId) => void;
 };
 
 const nextLabel = (existing: Encounter[]): string => `Patient ${existing.length + 1}`;
@@ -357,6 +360,26 @@ export const useEncounters = create<State & Actions>()(
             anamneseAnswers: { ...(e.anamneseAnswers ?? {}), [key]: answer },
           }))
         ),
+
+      setFlowDecision: (id, nodeKey, value) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => ({
+            ...e,
+            flowDecisions: { ...(e.flowDecisions ?? {}), [nodeKey]: value },
+          }))
+        ),
+
+      clearFlowDecision: (id, nodeKey) =>
+        set((s) =>
+          patchEncounter(s, id, (e) => {
+            const next = { ...(e.flowDecisions ?? {}) };
+            delete next[nodeKey];
+            return { ...e, flowDecisions: next };
+          })
+        ),
+
+      resetFlowDecisions: (id) =>
+        set((s) => patchEncounter(s, id, (e) => ({ ...e, flowDecisions: {} }))),
     }),
     {
       name: 'er-helper:encounters:v1',

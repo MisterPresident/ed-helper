@@ -7,6 +7,7 @@ import { DIAGNOSES_BY_KEY } from '../data/diagnoses';
 import { useEncounters } from '../store/encounters';
 import { VitalsStrip } from './VitalsStrip';
 import { DiagnosesStrip } from './DiagnosesStrip';
+import { FlowchartPanel } from './FlowchartPanel';
 
 const flagCycle: Record<RedFlagState, RedFlagState> = {
   unknown: 'excluded',
@@ -127,6 +128,9 @@ export function SidePanel({ enc }: { enc: Encounter }) {
       </Section>
       <Section title="Hypothesen">
         <DiagnosesStrip enc={enc} />
+      </Section>
+      <Section title="Algorithmus">
+        <FlowchartPanel enc={enc} />
       </Section>
       <Section title="SAMPLER" defaultOpen={false}>
         <SamplerPanel enc={enc} />
