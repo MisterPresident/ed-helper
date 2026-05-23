@@ -55,7 +55,7 @@ export function OpqrstStep({
                 )}
                 <input
                   type="text"
-                  className="mt-1 w-full rounded-md border border-slate-300 px-2 py-1.5 text-sm outline-none focus:border-slate-900"
+                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2.5 md:py-1.5 text-base md:text-sm outline-none focus:border-slate-900"
                   placeholder={f.placeholder}
                   value={enc.opqrst?.[f.key] ?? ''}
                   onChange={(e) => patch(enc.id, { [f.key]: e.target.value })}
@@ -80,10 +80,10 @@ export function OpqrstStep({
                   key={q.key}
                   type="button"
                   onClick={() => cycleAnswer(q.key)}
-                  className="flex items-center gap-3 rounded-md border border-slate-200 px-3 py-2 text-sm text-left hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-md border border-slate-200 px-3 py-3 md:py-2 text-sm text-left hover:bg-slate-50 min-h-[3rem] md:min-h-0"
                 >
                   <span
-                    className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold min-w-[2.5rem] text-center ${ANSWER_CLASS[answer]}`}
+                    className={`shrink-0 rounded px-2 py-1 text-xs font-semibold min-w-[2.5rem] text-center ${ANSWER_CLASS[answer]}`}
                   >
                     {ANSWER_LABEL[answer]}
                   </span>
@@ -95,11 +95,11 @@ export function OpqrstStep({
         </div>
       )}
 
-      <div className="mt-4 flex justify-between">
-        <button className="btn-outline" onClick={onBack}>
+      <div className="mt-4 flex flex-col-reverse md:flex-row justify-between gap-2">
+        <button className="btn-outline w-full md:w-auto" onClick={onBack}>
           ← Zurück
         </button>
-        <button className="btn-primary" onClick={onAdvance}>
+        <button className="btn-primary w-full md:w-auto" onClick={onAdvance}>
           Weiter →
         </button>
       </div>

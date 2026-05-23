@@ -122,15 +122,15 @@ function Section({
 
 export function SidePanel({ enc }: { enc: Encounter }) {
   return (
-    <aside className="hidden lg:flex w-80 shrink-0 border-l border-slate-200 bg-slate-50 flex-col gap-2 p-3 overflow-y-auto">
-      <Section title="Vitalwerte">
-        <VitalsStrip enc={enc} />
-      </Section>
-      <Section title="Hypothesen">
-        <DiagnosesStrip enc={enc} />
-      </Section>
+    <aside className="w-full border-l border-slate-200 bg-slate-50 flex flex-col gap-2 p-3 overflow-y-auto">
       <Section title="Algorithmus">
         <FlowchartPanel enc={enc} />
+      </Section>
+      <Section title="Vitalwerte" defaultOpen={false}>
+        <VitalsStrip enc={enc} />
+      </Section>
+      <Section title="Hypothesen" defaultOpen={false}>
+        <DiagnosesStrip enc={enc} />
       </Section>
       <Section title="SAMPLER" defaultOpen={false}>
         <SamplerPanel enc={enc} />
