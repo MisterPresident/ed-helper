@@ -15,3 +15,9 @@
 # Diarrhoe
 # Obstipation / Stuhlverhalt
 # Ikterus
+
+## Rheumatologie / Muskuloskelettal
+# Arthritis
+# Arthralgien
+# Myositis
+# Myalgien

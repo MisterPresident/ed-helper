@@ -686,4 +686,114 @@ export const RED_FLAGS: Record<RedFlagKey, RedFlag> = {
     suspects: 'Hyperkaliämie',
     action: 'Kalzium i.v., Insulin + Glukose, Natriumbikarbonat, Dialyse',
   },
+
+  // --- Arthritis ---
+  rf_arth_septisch: {
+    key: 'rf_arth_septisch',
+    label: 'Akute Monoarthritis + Fieber + Überwärmung + Bewegungsunfähigkeit',
+    suspects: 'V.a. septische Arthritis',
+    action: 'Sofortige Gelenkpunktion (Zellzahl, Gram, Kultur, Kristalle), BK, empirische AB, Orthopädie',
+  },
+  rf_arth_polyarthritis: {
+    key: 'rf_arth_polyarthritis',
+    label: 'Polyarthritis + Fieber + Exanthem / Serositis',
+    suspects: 'V.a. systemische Erkrankung (Lupus, Still, Vaskulitis)',
+    action: 'ANA, ANCA, RF, anti-CCP, Komplement, Rheumatologie konsultieren',
+  },
+  rf_arth_endokarditis: {
+    key: 'rf_arth_endokarditis',
+    label: 'Arthritis + Fieber + neues Herzgeräusch / i.v.-Drogen / Klappenersatz',
+    suspects: 'V.a. infektiöse Endokarditis mit septischer Arthritis',
+    action: 'BK ×3 vor AB, Echo (TTE/TEE), Duke-Kriterien',
+  },
+  rf_arth_haemarthros: {
+    key: 'rf_arth_haemarthros',
+    label: 'Akute Gelenkschwellung + Antikoagulation / Hämophilie / Trauma',
+    suspects: 'V.a. Hämarthros',
+    action: 'INR/Faktoren, ggf. Antagonisierung, Punktion erwägen, Bildgebung',
+  },
+  rf_arth_kawasaki: {
+    key: 'rf_arth_kawasaki',
+    label: 'Kind < 5 J + Fieber > 5 Tage + Arthritis + Konjunktivitis / Exanthem',
+    suspects: 'V.a. Kawasaki-Syndrom',
+    action: 'Echo (Koronaraneurysmen), IVIG + ASS, Pädiatrie',
+  },
+
+  // --- Arthralgien ---
+  rf_arl_systemisch: {
+    key: 'rf_arl_systemisch',
+    label: 'Arthralgien + B-Symptomatik (Fieber, Nachtschweiß, Gewichtsverlust)',
+    suspects: 'V.a. systemische Erkrankung (Vaskulitis, SLE, Endokarditis, Malignom)',
+    action: 'BSG, CRP, BB-Diff, ANA/ANCA, BK, Tumorscreen',
+  },
+  rf_arl_pmr_gca: {
+    key: 'rf_arl_pmr_gca',
+    label: '> 50 J + Schultergürtelschmerz + Morgensteifigkeit + Sehstörung / temporale Symptome',
+    suspects: 'V.a. PMR / Riesenzellarteriitis',
+    action: 'BSG/CRP, Sofort-Steroid bei Visusbedrohung, Biopsie A. temporalis',
+  },
+  rf_arl_paraneoplastisch: {
+    key: 'rf_arl_paraneoplastisch',
+    label: '> 50 J + neue Polyarthralgien + Gewichtsverlust + Trommelschlägelfinger',
+    suspects: 'V.a. paraneoplastische Arthropathie / HOA',
+    action: 'CT Thorax, Tumormarker, Onkologie',
+  },
+
+  // --- Myositis ---
+  rf_myo_rhabdo: {
+    key: 'rf_myo_rhabdo',
+    label: 'CK > 5000 U/l, Myoglobinurie (dunkler Urin), Krea ↑',
+    suspects: 'V.a. Rhabdomyolyse mit AKI-Risiko',
+    action: 'Volumengabe 200–500 ml/h, Elektrolyte (K⁺, Ca²⁺, Phosphat), Urin alkalisieren erwägen',
+  },
+  rf_myo_resp: {
+    key: 'rf_myo_resp',
+    label: 'Proximale Schwäche + Dyspnoe / Dysphagie / Aspirationszeichen',
+    suspects: 'V.a. respiratorische Erschöpfung bei PM/DM, Aspirationsrisiko',
+    action: 'Vitalkapazität, BGA, Aspirationsschutz, ggf. Intensiv',
+  },
+  rf_myo_pyom: {
+    key: 'rf_myo_pyom',
+    label: 'Fokaler Muskelschmerz + Fieber + Schwellung + Fluktuation',
+    suspects: 'V.a. Pyomyositis / Muskelabszess',
+    action: 'Sono / MRT, BK, Drainage, Staph-wirksame AB',
+  },
+  rf_myo_dermato: {
+    key: 'rf_myo_dermato',
+    label: 'Heliotropes Erythem / Gottron-Papeln + proximale Schwäche',
+    suspects: 'V.a. Dermatomyositis (Paraneoplasie in ~25 %)',
+    action: 'CK, Aldolase, anti-Jo-1 / anti-Mi-2, Tumorscreen (Mamma, Ovar, Lunge, GI)',
+  },
+  rf_myo_kompartment: {
+    key: 'rf_myo_kompartment',
+    label: 'Trauma / Reperfusion + heftiger Druckschmerz + neurologisches Defizit',
+    suspects: 'V.a. Kompartmentsyndrom',
+    action: 'Druckmessung, sofort Faszientomie, Chirurgie',
+  },
+
+  // --- Myalgien ---
+  rf_myalg_rhabdo: {
+    key: 'rf_myalg_rhabdo',
+    label: 'Dunkler Urin, schwere Muskelschmerzen, CK ↑, Krea ↑',
+    suspects: 'V.a. Rhabdomyolyse',
+    action: 'CK, Myoglobin, Krea, K⁺, Volumengabe, Trigger entfernen',
+  },
+  rf_myalg_gca: {
+    key: 'rf_myalg_gca',
+    label: '> 50 J + neue Kopfschmerzen / Kauclaudicatio / Visusverlust + Schultergürtelschmerz',
+    suspects: 'V.a. Riesenzellarteriitis (mit / ohne PMR)',
+    action: 'BSG/CRP, Sofort-Steroid 60–100 mg, Sono / Biopsie A. temporalis',
+  },
+  rf_myalg_statin: {
+    key: 'rf_myalg_statin',
+    label: 'Statin-Einnahme + Muskelschmerz + CK > 10× ULN oder Schwäche',
+    suspects: 'V.a. Statin-induzierte Myopathie / nekrotisierende Autoimmun-Myopathie',
+    action: 'Statin pausieren, CK-Verlauf, bei persistierender Schwäche → Anti-HMGCR',
+  },
+  rf_myalg_elektrolyte: {
+    key: 'rf_myalg_elektrolyte',
+    label: 'Generalisierte Muskelschmerzen / Schwäche + Hypo-K / Hypo-Mg / Hypo-Ca / Hypo-P',
+    suspects: 'V.a. elektrolytbedingte Myopathie',
+    action: 'Elektrolyte ausgleichen, Ursache klären (Diuretika, GI-Verlust, Hyperaldo)',
+  },
 };
