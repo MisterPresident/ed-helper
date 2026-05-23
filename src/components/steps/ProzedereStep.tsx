@@ -66,7 +66,7 @@ export function ProzedereStep({
         value={enc.prozedere ?? ''}
         onChange={(e) => setText(enc.id, e.target.value)}
       />
-      <div className="mt-4 flex justify-between">
+      <div className="mt-4 flex flex-col-reverse md:flex-row justify-between gap-2 [&>button]:w-full md:[&>button]:w-auto">
         <button className="btn-outline" onClick={onBack}>
           ← Zurück
         </button>

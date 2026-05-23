@@ -126,7 +126,7 @@ export function DischargeStep({
       {confirmedDefs.map((dx) => (
         <DiagnosisDischargePanel key={dx.key} enc={enc} dx={dx} />
       ))}
-      <div className="card flex justify-between">
+      <div className="card flex flex-col-reverse md:flex-row justify-between gap-2 [&>button]:w-full md:[&>button]:w-auto">
         <button className="btn-outline" onClick={onBack}>
           ← Zurück
         </button>

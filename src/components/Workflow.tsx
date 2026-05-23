@@ -70,7 +70,7 @@ export function Workflow({ encounter }: { encounter: Encounter }) {
   const back = () => setStep(encounter.id, prevStep(encounter, step));
 
   return (
-    <div className="flex-1 overflow-y-auto p-6">
+    <div className="flex-1 overflow-y-auto p-3 md:p-6">
       <div className="max-w-3xl mx-auto">
         <Breadcrumb
           steps={seq}
@@ -78,7 +78,7 @@ export function Workflow({ encounter }: { encounter: Encounter }) {
           onJump={(s) => setStep(encounter.id, s)}
         />
 
-        <div className="mt-4">
+        <div className="mt-3 md:mt-4">
           {step === 'leitsymptom' && (
             <LeitsymptomStep enc={encounter} onAdvance={advance} />
           )}
@@ -125,14 +125,14 @@ function Breadcrumb({
 }) {
   const currentIdx = steps.indexOf(current);
   return (
-    <div className="flex flex-wrap items-center gap-1 text-sm">
+    <div className="flex items-center gap-1 text-sm overflow-x-auto -mx-3 px-3 md:mx-0 md:px-0 md:flex-wrap pb-1 scrollbar-thin">
       {steps.map((s, idx) => {
         const active = s === current;
         const past = idx < currentIdx;
         return (
-          <div key={s} className="flex items-center gap-1">
+          <div key={s} className="flex items-center gap-1 shrink-0">
             <button
-              className={`px-2 py-1 rounded-md transition text-xs ${
+              className={`px-2.5 py-1.5 rounded-md transition text-xs whitespace-nowrap ${
                 active
                   ? 'bg-slate-900 text-white'
                   : past

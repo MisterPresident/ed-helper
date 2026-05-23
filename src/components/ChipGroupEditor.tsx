@@ -35,9 +35,9 @@ export function ChipGroupEditor({
   };
 
   return (
-    <div className="grid grid-cols-[7rem_1fr_auto] gap-2 items-start py-1.5">
-      <div className="text-xs font-semibold text-slate-700 pt-1">{group.label}</div>
-      <div className="flex flex-wrap gap-1">
+    <div className="flex flex-col md:grid md:grid-cols-[7rem_1fr_auto] gap-2 items-start py-2 border-b border-slate-100 last:border-0 md:border-0">
+      <div className="text-sm md:text-xs font-semibold text-slate-700 md:pt-1">{group.label}</div>
+      <div className="flex flex-wrap gap-1.5 w-full">
         {group.chips.map((c) => {
           const active = chips.includes(c);
           return (
@@ -56,10 +56,10 @@ export function ChipGroupEditor({
         })}
       </div>
       {group.number ? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1.5">
           <input
             inputMode="decimal"
-            className={`w-16 rounded-md border px-2 py-1 text-sm tabular-nums outline-none ${
+            className={`w-20 md:w-16 rounded-md border px-2 py-2 md:py-1 text-base md:text-sm tabular-nums outline-none ${
               abnormal
                 ? 'border-danger-600 bg-danger-50 text-danger-700 focus:border-danger-700'
                 : 'border-slate-300 focus:border-slate-900'
@@ -71,7 +71,7 @@ export function ChipGroupEditor({
           <span className="text-xs text-slate-500">{group.number.unit}</span>
         </div>
       ) : (
-        <span />
+        <span className="hidden md:block" />
       )}
     </div>
   );

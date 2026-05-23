@@ -83,7 +83,7 @@ export function ScoreCalculator({
         ))}
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-slate-200 pt-3">
+      <div className="mt-5 flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-t border-slate-200 pt-3">
         <div>
           <div className="text-xs uppercase text-slate-500">Summe</div>
           <div className="text-2xl font-semibold tabular-nums">
@@ -96,17 +96,17 @@ export function ScoreCalculator({
             </div>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {onClear && initial && (
-            <button className="btn-outline" onClick={onClear}>
+            <button className="btn-outline flex-1 md:flex-none" onClick={onClear}>
               Zurücksetzen
             </button>
           )}
-          <button className="btn-outline" onClick={onClose}>
+          <button className="btn-outline flex-1 md:flex-none" onClick={onClose}>
             Abbrechen
           </button>
           <button
-            className="btn-primary"
+            className="btn-primary flex-1 md:flex-none"
             disabled={!complete}
             onClick={() => {
               onSave(liveResult);

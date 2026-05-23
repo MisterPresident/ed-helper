@@ -21,7 +21,7 @@ export function VitalsStrip({ enc }: { enc: Encounter }) {
   const setVital = useEncounters((s) => s.setVital);
   return (
     <div>
-      <div className="grid grid-cols-3 gap-1.5">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-1.5">
         {FIELDS.map((f) => (
           <label key={f.key} className="block">
             <span className="block text-[10px] uppercase tracking-wide text-slate-500">
@@ -30,7 +30,7 @@ export function VitalsStrip({ enc }: { enc: Encounter }) {
             </span>
             <input
               inputMode="decimal"
-              className="mt-0.5 w-full rounded-md border border-slate-300 px-2 py-1 text-sm tabular-nums outline-none focus:border-slate-900"
+              className="mt-0.5 w-full rounded-md border border-slate-300 px-2 py-2 md:py-1 text-base md:text-sm tabular-nums outline-none focus:border-slate-900"
               placeholder={f.placeholder}
               value={enc.vitals?.[f.key] ?? ''}
               onChange={(e) => setVital(enc.id, f.key, e.target.value)}
@@ -43,7 +43,7 @@ export function VitalsStrip({ enc }: { enc: Encounter }) {
           O₂-Supplementation
         </span>
         <input
-          className="mt-0.5 w-full rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-slate-900"
+          className="mt-0.5 w-full rounded-md border border-slate-300 px-2 py-2 md:py-1 text-base md:text-sm outline-none focus:border-slate-900"
           placeholder="Raumluft / 2 L Brille / NIV …"
           value={enc.vitals?.o2_supp ?? ''}
           onChange={(e) => setVital(enc.id, 'o2_supp', e.target.value)}

@@ -122,7 +122,7 @@ function Section({
 
 export function SidePanel({ enc }: { enc: Encounter }) {
   return (
-    <aside className="hidden md:flex w-80 shrink-0 border-l border-slate-200 bg-slate-50 flex-col gap-2 p-3 overflow-y-auto">
+    <aside className="w-full border-l border-slate-200 bg-slate-50 flex flex-col gap-2 p-3 overflow-y-auto">
       <Section title="Algorithmus">
         <FlowchartPanel enc={enc} />
       </Section>
