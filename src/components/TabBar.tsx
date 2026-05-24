@@ -22,7 +22,7 @@ export function TabBar() {
   };
 
   return (
-    <aside className="w-full border-r border-slate-200 bg-white p-3 flex flex-col gap-2 overflow-y-auto">
+    <aside className="w-full min-h-0 border-r border-slate-200 bg-white p-3 flex flex-col gap-2 overflow-y-auto">
       <button
         className="btn-primary min-h-[2.75rem] text-base"
         onClick={() => {

@@ -359,18 +359,20 @@ function buildDifferentialdiagnose(enc: Encounter): string | null {
   return lines.length ? lines.join('\n') : null;
 }
 
-// ───────── Entlassungskriterien (per confirmed diagnosis) ─────────
+// ───────── Entlassungskriterien (per nicht-ausgeschlossener Diagnose) ─────────
 function buildDischarge(enc: Encounter): string | null {
-  const confirmed = (enc.diagnoses ?? []).filter((d) => d.status === 'confirmed');
-  if (confirmed.length === 0) return null;
+  const active = (enc.diagnoses ?? []).filter((d) => d.status !== 'excluded');
+  if (active.length === 0) return null;
   const blocks: string[] = [];
-  for (const dx of confirmed) {
+  for (const dx of active) {
     const def = DIAGNOSES_BY_KEY[dx.key];
     if (!def || def.dischargeRules.length === 0) continue;
     const sev = def.severityClassifier?.(enc) ?? null;
-    const header = sev
-      ? `${def.label} — ${sev.stage}${sev.basedOn.length ? ' (' + sev.basedOn.join(', ') + ')' : ''}`
-      : def.label;
+    const statusTag = dx.status === 'confirmed' ? 'bestätigt' : 'V.a.';
+    const sevPart = sev
+      ? ` — ${sev.stage}${sev.basedOn.length ? ' (' + sev.basedOn.join(', ') + ')' : ''}`
+      : '';
+    const header = `${def.label} [${statusTag}]${sevPart}`;
     const lines = [header];
     def.dischargeRules.forEach((rule, idx) => {
       const checked = !!enc.dischargeChecked?.[`${dx.key}:${idx}`];

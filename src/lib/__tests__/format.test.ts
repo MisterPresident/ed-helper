@@ -236,6 +236,33 @@ describe('buildSummary — confirmed diagnosis discharge', () => {
     expect(s).toContain('Hypertonie: V.a.');
     expect(s).toContain('Hyperglykämie: ausgeschlossen');
   });
+
+  it('emits discharge criteria for suspected diagnoses (working dx), tagged V.a.', () => {
+    const enc = baseEnc({
+      diagnoses: [{ key: 'hypoglykaemie', status: 'suspected', addedAt: 0 }],
+      dischargeChecked: { 'hypoglykaemie:0': true },
+    });
+    const s = buildSummary(enc);
+    expect(s).toContain('<u>Entlassungskriterien:</>');
+    expect(s).toMatch(/Hypoglykämie \[V\.a\.\]/);
+    expect(s).toContain('☑');
+  });
+
+  it('skips discharge block when only excluded diagnoses exist', () => {
+    const enc = baseEnc({
+      diagnoses: [{ key: 'hypoglykaemie', status: 'excluded', addedAt: 0 }],
+    });
+    const s = buildSummary(enc);
+    expect(s).not.toContain('<u>Entlassungskriterien:</>');
+  });
+
+  it('tags confirmed diagnoses with [bestätigt] in discharge header', () => {
+    const enc = baseEnc({
+      diagnoses: [{ key: 'hypoglykaemie', status: 'confirmed', addedAt: 0 }],
+    });
+    const s = buildSummary(enc);
+    expect(s).toMatch(/Hypoglykämie \[bestätigt\]/);
+  });
 });
 
 describe('buildSummary — ROS inline in Anamnese', () => {
