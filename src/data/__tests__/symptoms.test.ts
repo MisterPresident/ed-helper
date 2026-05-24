@@ -71,3 +71,28 @@ describe('Gastrointestinal Leitsymptome', () => {
     expect(SYMPTOMS_BY_KEY.gib).toBeUndefined();
   });
 });
+
+describe('Rheumatologische Leitsymptome', () => {
+  const RHEUMA_KEYS = ['arthritis', 'arthralgien', 'myositis', 'myalgien'];
+
+  it.each(RHEUMA_KEYS)('symptom %s is registered', (key) => {
+    expect(SYMPTOMS_BY_KEY[key], `missing rheuma symptom ${key}`).toBeDefined();
+  });
+
+  it('every rheuma symptom carries killer diagnoses, red flags, DDx and anamnese', () => {
+    for (const key of RHEUMA_KEYS) {
+      const sym = SYMPTOMS_BY_KEY[key];
+      expect(sym.killerDiagnoses?.length ?? 0, `${key} killer`).toBeGreaterThan(0);
+      expect(sym.redFlagKeys.length, `${key} red flags`).toBeGreaterThan(0);
+      expect(sym.differentials.length, `${key} DDx`).toBeGreaterThanOrEqual(5);
+      expect(sym.anamneseQuestions?.length ?? 0, `${key} anamnese`).toBeGreaterThan(0);
+    }
+  });
+
+  it('arthritis flowchart routes the septische-Arthritis pathway when fever answered', () => {
+    const flow = SYMPTOMS_BY_KEY.arthritis;
+    expect(flow.redFlagKeys).toContain('rf_arth_septisch');
+    const fieberQ = flow.anamneseQuestions?.find((q) => q.key === 'art_fieber');
+    expect(fieberQ, 'fever question for septic arthritis branch').toBeDefined();
+  });
+});
