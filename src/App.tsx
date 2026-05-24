@@ -23,19 +23,19 @@ export function App() {
 
           <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
             <section
-              className={`${mobileTab === 'patients' ? 'flex' : 'hidden'} md:flex w-full md:w-56 shrink-0 overflow-hidden`}
+              className={`${mobileTab === 'patients' ? 'flex flex-1' : 'hidden'} md:flex md:flex-none w-full md:w-56 shrink-0 min-h-0 overflow-hidden`}
             >
               <TabBar />
             </section>
 
             <main
-              className={`${mobileTab === 'workflow' ? 'flex' : 'hidden'} md:flex flex-1 flex-col min-w-0 overflow-hidden`}
+              className={`${mobileTab === 'workflow' ? 'flex' : 'hidden'} md:flex flex-1 flex-col min-w-0 min-h-0 overflow-hidden`}
             >
               {active ? <Workflow encounter={active} /> : <Home />}
             </main>
 
             <section
-              className={`${mobileTab === 'algorithm' ? 'flex' : 'hidden'} md:flex w-full md:w-80 shrink-0 overflow-hidden`}
+              className={`${mobileTab === 'algorithm' ? 'flex flex-1' : 'hidden'} md:flex md:flex-none w-full md:w-80 shrink-0 min-h-0 overflow-hidden`}
             >
               {active ? (
                 <SidePanel enc={active} />

@@ -1,4 +1,4 @@
-import type { DiagnosisDef, Encounter } from '../../types';
+import type { DiagnosisDef, DxStatus, Encounter } from '../../types';
 import { DIAGNOSES_BY_KEY } from '../../data/diagnoses';
 import { useEncounters } from '../../store/encounters';
 
@@ -15,16 +15,24 @@ function severityBadgeClass(tier: 'mild' | 'moderate' | 'severe' | 'critical'): 
   }
 }
 
+const STATUS_BADGE: Record<Exclude<DxStatus, 'excluded'>, { label: string; cls: string }> = {
+  suspected: { label: 'V.a.', cls: 'bg-amber-100 text-amber-800' },
+  confirmed: { label: 'bestätigt', cls: 'bg-danger-100 text-danger-700' },
+};
+
 function DiagnosisDischargePanel({
   enc,
   dx,
+  status,
 }: {
   enc: Encounter;
   dx: DiagnosisDef;
+  status: Exclude<DxStatus, 'excluded'>;
 }) {
   const setDischarge = useEncounters((s) => s.setDischarge);
   const sev = dx.severityClassifier?.(enc) ?? null;
   const rules = dx.dischargeRules;
+  const statusBadge = STATUS_BADGE[status];
 
   const allChecked = rules.every((_, idx) => enc.dischargeChecked?.[`${dx.key}:${idx}`]);
 
@@ -32,7 +40,15 @@ function DiagnosisDischargePanel({
     <div className="card">
       <div className="flex items-start justify-between gap-2 mb-2">
         <div>
-          <h4 className="font-semibold">{dx.label} – Entlassungskriterien</h4>
+          <div className="flex items-center gap-2 flex-wrap">
+            <h4 className="font-semibold">{dx.label} – Entlassungskriterien</h4>
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusBadge.cls}`}
+              title="Status der Hypothese (im Hypothesen-Strip änderbar)"
+            >
+              {statusBadge.label}
+            </span>
+          </div>
           {sev && (
             <div className="mt-0.5 flex items-center gap-2 text-xs">
               <span
@@ -100,31 +116,36 @@ export function DischargeStep({
   onAdvance: () => void;
   onBack: () => void;
 }) {
-  const confirmed = (enc.diagnoses ?? []).filter((d) => d.status === 'confirmed');
-  const confirmedDefs = confirmed
-    .map((d) => DIAGNOSES_BY_KEY[d.key])
-    .filter((d): d is DiagnosisDef => Boolean(d));
+  const active = (enc.diagnoses ?? []).filter((d) => d.status !== 'excluded');
+  const panels = active
+    .map((d) => {
+      const def = DIAGNOSES_BY_KEY[d.key];
+      if (!def || def.dischargeRules.length === 0) return null;
+      return { def, status: d.status as Exclude<DxStatus, 'excluded'> };
+    })
+    .filter((x): x is { def: DiagnosisDef; status: Exclude<DxStatus, 'excluded'> } =>
+      Boolean(x)
+    );
 
   return (
     <div className="space-y-3">
       <div className="card">
         <h3 className="text-base font-semibold">Entlassungskriterien</h3>
         <p className="text-sm text-slate-500">
-          Pro bestätigter Diagnose werden die zugehörigen Entlassungskriterien angezeigt.
-          Ohne bestätigte Diagnosen ist dieser Schritt leer — ggf. im Hypothesen-Strip
-          rechts eine Diagnose auf „bestätigt" setzen.
+          Kriterien werden für jede nicht-ausgeschlossene Hypothese (V.a. oder bestätigt)
+          angezeigt. Status im Hypothesen-Strip rechts wechseln.
         </p>
       </div>
-      {confirmedDefs.length === 0 && (
+      {panels.length === 0 && (
         <div className="card">
           <p className="text-sm text-slate-500 italic">
-            Noch keine Diagnose bestätigt. Entweder über den Hypothesen-Strip bestätigen
-            oder als Symptomdiagnose im Prozedere dokumentieren.
+            Keine aktiven Hypothesen mit hinterlegten Entlassungskriterien. Über den
+            DDx-Schritt „→ V.a." promovieren oder im Hypothesen-Strip ergänzen.
           </p>
         </div>
       )}
-      {confirmedDefs.map((dx) => (
-        <DiagnosisDischargePanel key={dx.key} enc={enc} dx={dx} />
+      {panels.map(({ def, status }) => (
+        <DiagnosisDischargePanel key={def.key} enc={enc} dx={def} status={status} />
       ))}
       <div className="card flex flex-col-reverse md:flex-row justify-between gap-2 [&>button]:w-full md:[&>button]:w-auto">
         <button className="btn-outline" onClick={onBack}>
